@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Release Notes for 53L3A2 BSP</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="_htmresc/mini-st_2020.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <link rel="icon" type="image/x-icon" href="_htmresc/favicon.png" />
+</head>
+<body>
+<div class="row">
+<div class="col-sm-12 col-lg-4">
+<center>
+<h1 id="release-notes-for-53l3a2-bsp">Release Notes for <mark>53L3A2</mark> BSP</h1>
+<p>Copyright © 2022 STMicroelectronics<br />
+</p>
+<a href="https://www.st.com" class="logo"><img src="_htmresc/st_logo_2020.png" alt="ST logo" /></a>
+</center>
+<h1 id="purpose">Purpose</h1>
+<p>The <strong>53L3A2 BSP</strong> is a software component intenteded to be used within the <strong>STM32Cube</strong> ecosystem. This software implements the BSP v2.0 specifications for the X-NUCLEO-53L3A2 Expansion Board on STM32. It is built on top of STM32Cube software technology that ease portability across different STM32 micro-controllers.</p>
+<p>Here is the list of references:</p>
+<ul>
+<li><a href="https://www.st.com/content/st_com/en/products/ecosystems/stm32-open-development-environment/stm32-nucleo-expansion-boards/stm32-ode-sense-hw/x-nucleo-53l3a2.html">X-NUCLEO-53L3A2: Multi-targets ranging sensor expansion board based on VL53L3CX for STM32 Nucleo</a></li>
+<li><a href="https://www.st.com/content/st_com/en/products/imaging-and-photonics-solutions/proximity-sensors/vl53l3cx.html">VL53L3CX: Time-of-Flight ranging sensor with multi target detection</a></li>
+<li><a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/proximity-sensors-and-imaging-ics-eval-boards/vl53l3cx-satel.html">VL53L3CX-SATEL: Breakout board with VL53L3CX multi-target detection</a></li>
+</ul>
+</div>
+<section id="update-history" class="col-sm-12 col-lg-8">
+<h1>Update History</h1>
+<div class="collapse">
+<input type="checkbox" id="collapse-section2" checked aria-hidden="true"> <label for="collapse-section2" aria-hidden="true"><strong>v2.0.2 / February 25th 2022</strong></label>
+<div>
+<h2 id="main-changes">Main Changes</h2>
+<h3 id="maintenance-release-and-product-update">Maintenance release and product update</h3>
+<ul>
+<li>Added missing LICENSE files</li>
+</ul>
+<h2 id="contents">Contents</h2>
+<p><small>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</small></p>
+<p>Components</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Release note</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>X-NUCLEO-53L3A2 BSP Driver</strong></td>
+<td style="text-align: left;">V2.0.2<span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href=".\Release_Notes.html">release note</a></td>
+</tr>
+</tbody>
+</table>
+<p>Note: in the table above, components <strong>highlighted</strong> have changed since previous release.</p>
+<h2 id="known-limitations">Known Limitations</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Headline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No known limitations</td>
+</tr>
+</tbody>
+</table>
+<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR System Workbench V8.50.9</li>
+<li>ARM Keil V5.32</li>
+<li>STM32CubeIDE v1.7.0</li>
+</ul>
+<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<ul>
+<li>X-NUCLEO-53L3A2</li>
+<li>VL53L3CX-SATEL</li>
+</ul>
+<h2 id="backward-compatibility">Backward Compatibility</h2>
+<p>N/A</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li>VL53L3CX Component Driver v2.0.1</li>
+<li>STM32CubeHAL F4 V1.7.13</li>
+<li>STM32CubeHAL L4 V1.13.0</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section2" checked aria-hidden="true"> <label for="collapse-section2" aria-hidden="true"><strong>v2.0.1 / January 12th 2022</strong></label>
+<div>
+<h2 id="main-changes-1">Main Changes</h2>
+<h3 id="maintenance-release-and-product-update-1">Maintenance release and product update</h3>
+<ul>
+<li>Update component used by the BSP ranging sensor class</li>
+</ul>
+<h2 id="contents-1">Contents</h2>
+<p><small>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</small></p>
+<p>Components</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Release note</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>X-NUCLEO-53L3A2 BSP Driver</strong></td>
+<td style="text-align: left;">V2.0.1<span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href=".\Release_Notes.html">release note</a></td>
+</tr>
+</tbody>
+</table>
+<p>Note: in the table above, components <strong>highlighted</strong> have changed since previous release.</p>
+<h2 id="known-limitations-1">Known Limitations</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Headline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No known limitations</td>
+</tr>
+</tbody>
+</table>
+<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR System Workbench V8.50.9</li>
+<li>ARM Keil V5.32</li>
+<li>STM32CubeIDE v1.7.0</li>
+</ul>
+<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
+<ul>
+<li>X-NUCLEO-53L3A2</li>
+<li>VL53L3CX-SATEL</li>
+</ul>
+<h2 id="backward-compatibility-1">Backward Compatibility</h2>
+<p>N/A</p>
+<h2 id="dependencies-1">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li>VL53L3CX Component Driver v2.0.1</li>
+<li>STM32CubeHAL F4 V1.7.13</li>
+<li>STM32CubeHAL L4 V1.13.0</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section2" checked aria-hidden="true"> <label for="collapse-section2" aria-hidden="true"><strong>v2.0.0 / July 1st 2021</strong></label>
+<div>
+<h2 id="main-changes-2">Main Changes</h2>
+<h3 id="maintenance-release-and-product-update-2">Maintenance release and product update</h3>
+<ul>
+<li>Update data structures accordingly to the new BSP ranging sensor class
+<ul>
+<li>It is now possible to enable and disable ambient and signal output in RANGING_SENSOR_ConfigProfile_t</li>
+<li>The sensor’s measurement data are now stored in a different way which will ease portability of your application from one Time-of-Flight device to another</li>
+</ul></li>
+<li>Fix typos and other minor changes</li>
+</ul>
+<h2 id="contents-2">Contents</h2>
+<p><small>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</small></p>
+<p>Components</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">License</th>
+<th style="text-align: left;">Release note</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>X-NUCLEO-53L3A2 BSP Driver</strong></td>
+<td style="text-align: left;">V2.0.0<span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="https://opensource.org/licenses/BSD-3-Clause">BSD 3-Clause</a></td>
+<td style="text-align: left;"><a href=".\Release_Notes.html">release note</a></td>
+</tr>
+</tbody>
+</table>
+<p>Note: in the table above, components <strong>highlighted</strong> have changed since previous release.</p>
+<h2 id="known-limitations-2">Known Limitations</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Headline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No known limitations</td>
+</tr>
+</tbody>
+</table>
+<h2 id="development-toolchains-and-compilers-2">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR System Workbench V8.50.9</li>
+<li>ARM Keil V5.32</li>
+<li>STM32CubeIDE v1.6.1</li>
+</ul>
+<h2 id="supported-devices-and-boards-2">Supported Devices and Boards</h2>
+<ul>
+<li>X-NUCLEO-53L3A2</li>
+<li>VL53L3CX-SATEL</li>
+</ul>
+<h2 id="backward-compatibility-2">Backward Compatibility</h2>
+<p>N/A</p>
+<h2 id="dependencies-2">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li>VL53L3CX Component Driver v2.0.0</li>
+<li>STM32CubeHAL F4 V1.7.12</li>
+<li>STM32CubeHAL L4 V1.13.0</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section1" checked aria-hidden="true"> <label for="collapse-section1" aria-hidden="true"><strong>v1.0.0 / March 15th 2021</strong></label>
+<div>
+<h2 id="main-changes-3">Main Changes</h2>
+<h3 id="first-release">First release</h3>
+<p>This is the first release of the <strong>53L3A2 BSP</strong> Driver.</p>
+<h2 id="contents-3">Contents</h2>
+<p><small>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</small></p>
+<p>Components</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">License</th>
+<th style="text-align: left;">Release note</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>X-NUCLEO-53L3A2 BSP Driver</strong></td>
+<td style="text-align: left;">V1.0.0<span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="https://opensource.org/licenses/BSD-3-Clause">BSD 3-Clause</a></td>
+<td style="text-align: left;"><a href=".\Release_Notes.html">release note</a></td>
+</tr>
+</tbody>
+</table>
+<p>Note: in the table above, components <strong>highlighted</strong> have changed since previous release.</p>
+<h2 id="known-limitations-3">Known Limitations</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Headline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">No known limitations</td>
+</tr>
+</tbody>
+</table>
+<h2 id="development-toolchains-and-compilers-3">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR System Workbench V8.50.5</li>
+<li>ARM Keil V5.31</li>
+<li>STM32CubeIDE v1.6.0</li>
+</ul>
+<h2 id="supported-devices-and-boards-3">Supported Devices and Boards</h2>
+<ul>
+<li>X-NUCLEO-53L3A2</li>
+<li>VL53L3CX-SATEL</li>
+</ul>
+<h2 id="backward-compatibility-3">Backward Compatibility</h2>
+<p>N/A</p>
+<h2 id="dependencies-3">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li>VL53L3CX Component Driver v1.0.0</li>
+</ul>
+</div>
+</div>
+</section>
+</div>
+<footer class="sticky">
+<div class="columns">
+<div class="column" style="width:95%;">
+<p>For complete documentation on <strong>STM32Cube Expansion Packages</strong> , visit: <a href="https://www.st.com/en/embedded-software/stm32cube-expansion-packages.html">STM32Cube Expansion Packages</a></p>
+</div><div class="column" style="width:5%;">
+<p><abbr title="Based on template cx566953 version 2.0">Info</abbr></p>
+</div>
+</div>
+</footer>
+</body>
+</html>

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_TiltSensing.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add Tilt Sensing service using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -36,9 +36,9 @@ static BleCharTypeDef BleTiltSensing;
 
 /* Private functions ---------------------------------------------------------*/
 static void AttrMod_Request_TiltSensing(void *BleCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 static void Read_Request_TiltSensing(void *BleCharPointer,uint16_t handle);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 static void Read_Request_TiltSensing(void *BleCharPointer,
                              uint16_t handle,
                              uint16_t Connection_Handle,
@@ -46,7 +46,7 @@ static void Read_Request_TiltSensing(void *BleCharPointer,
                              uint16_t Attr_Val_Offset,
                              uint8_t Data_Length,
                              uint8_t Data[]);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
  * @brief  Init Tilt Sensing service
@@ -165,7 +165,7 @@ static void AttrMod_Request_TiltSensing(void *VoidCharPointer, uint16_t attr_han
  * @param  uint16_t handle Handle of the attribute
  * @retval None
  */
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 static void Read_Request_TiltSensing(void *VoidCharPointer,uint16_t handle)
 {
   if(CustomReadRequestTiltSensing != NULL) {
@@ -176,7 +176,7 @@ static void Read_Request_TiltSensing(void *VoidCharPointer,uint16_t handle)
     BLE_MANAGER_PRINTF("\r\n\nRead request Tilt Sensing function not defined\r\n\n");
   }
 }
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 static void Read_Request_TiltSensing(void *BleCharPointer,
                                      uint16_t handle,
                                      uint16_t Connection_Handle,
@@ -229,5 +229,5 @@ static void Read_Request_TiltSensing(void *BleCharPointer,
     BLE_MANAGER_PRINTF("aci_gatt_srv_authorize_resp_nwk() failed: 0x%02x\r\n", ret);
   }
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 

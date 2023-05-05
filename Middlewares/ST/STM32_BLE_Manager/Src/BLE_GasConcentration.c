@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_GasConcentration.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add gas concentration info services using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -29,7 +29,7 @@
 #define GAS_CONCENTRATION_ADVERTISE_DATA_POSITION  17
 
 /* Exported variables --------------------------------------------------------*/
-CustomNotifyEventGasConcentration_t CustomNotifyEventGacConcentration=NULL;
+CustomNotifyEventGasConcentration_t CustomNotifyEventGasConcentration=NULL;
 CustomReadRequestGasConcentration_t CustomReadRequestGasConcentration=NULL;
 
 /* Private variables ---------------------------------------------------------*/
@@ -38,9 +38,9 @@ static BleCharTypeDef BleCharGasConcentration;
 
 /* Private functions ---------------------------------------------------------*/
 static void AttrMod_Request_GasConcentration(void *BleCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 static void Read_Request_GasConcentration(void *BleCharPointer,uint16_t handle);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 static void Read_Request_GasConcentration(void *BleCharPointer,
                              uint16_t handle,
                              uint16_t Connection_Handle,
@@ -48,7 +48,7 @@ static void Read_Request_GasConcentration(void *BleCharPointer,
                              uint16_t Attr_Val_Offset,
                              uint8_t Data_Length,
                              uint8_t Data[]);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
  * @brief  Init gas concentration info service
@@ -137,16 +137,16 @@ tBleStatus BLE_GasConcentrationStatusUpdate(uint32_t Gas)
  */
 static void AttrMod_Request_GasConcentration(void *VoidCharPointer, uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data)
 {
-  if(CustomNotifyEventGacConcentration!=NULL) {
+  if(CustomNotifyEventGasConcentration!=NULL) {
     if (att_data[0] == 01U) {
-      CustomNotifyEventGacConcentration(BLE_NOTIFY_SUB);
+      CustomNotifyEventGasConcentration(BLE_NOTIFY_SUB);
     } else if (att_data[0] == 0U){
-      CustomNotifyEventGacConcentration(BLE_NOTIFY_UNSUB);
+      CustomNotifyEventGasConcentration(BLE_NOTIFY_UNSUB);
     }
   }
 #if (BLE_DEBUG_LEVEL>1)
   else {
-     BLE_MANAGER_PRINTF("CustomNotifyEventGacConcentration function Not Defined\r\n");
+     BLE_MANAGER_PRINTF("CustomNotifyEventGasConcentration function Not Defined\r\n");
   }
   
  if(BLE_StdTerm_Service==BLE_SERV_ENABLE) {
@@ -164,7 +164,7 @@ static void AttrMod_Request_GasConcentration(void *VoidCharPointer, uint16_t att
  * @param  uint16_t handle Handle of the attribute
  * @retval None
  */
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 static void Read_Request_GasConcentration(void *VoidCharPointer,uint16_t handle)
 {
   if(CustomReadRequestGasConcentration != NULL) {
@@ -175,7 +175,7 @@ static void Read_Request_GasConcentration(void *VoidCharPointer,uint16_t handle)
     BLE_MANAGER_PRINTF("\r\n\nRead request Gas Concentration function not defined\r\n\n");
   }
 }
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 static void Read_Request_GasConcentration(void *BleCharPointer,
                                            uint16_t handle,
                                            uint16_t Connection_Handle,
@@ -215,5 +215,5 @@ static void Read_Request_GasConcentration(void *BleCharPointer,
     BLE_MANAGER_PRINTF("aci_gatt_srv_authorize_resp_nwk() failed: 0x%02x\r\n", ret);
   }
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_AudioLevel.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add audio level info services using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -104,7 +104,7 @@ tBleStatus BLE_AudioLevelUpdate(uint16_t *AudioLevelData, uint8_t AudioLevelNumb
   
   ret = ACI_GATT_UPDATE_CHAR_VALUE(&BleCharAudioLevel, 0, (2U + AudioLevelNumber), buff);
   
-  if (ret != BLE_STATUS_SUCCESS){
+  if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
     if(BLE_StdErr_Service==BLE_SERV_ENABLE){
       BytesToWrite = (uint8_t)sprintf((char *)BufferToWrite, "Error Updating Audio Level Data Char\r\n");
       Stderr_Update(BufferToWrite,BytesToWrite);

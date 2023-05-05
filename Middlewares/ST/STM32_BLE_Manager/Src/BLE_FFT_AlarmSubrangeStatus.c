@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_FFT_AlarmSubrangeStatus.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add BLE FFT Alarm Subrange Status info services using vendor
   *          specific profiles.
   ******************************************************************************
@@ -112,8 +112,8 @@ tBleStatus BLE_FFT_AlarmSubrangeStatusUpdate(sBLE_FFT_AlarmSubrangeStatus_t     
   
   ret = ACI_GATT_UPDATE_CHAR_VALUE(&BleCharFFT_AlarmSubrangeStatus, 0, 2+13, Buff);
   
-  if (ret != BLE_STATUS_SUCCESS){
-    if(ret != BLE_STATUS_INSUFFICIENT_RESOURCES) {
+  if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
+    if(ret != (tBleStatus)BLE_STATUS_INSUFFICIENT_RESOURCES) {
       if(BLE_StdErr_Service==BLE_SERV_ENABLE){
         BytesToWrite =(uint8_t)sprintf((char *)BufferToWrite, "Error Updating FFT Alarm Subrange Status Char\n");
         Stderr_Update(BufferToWrite,BytesToWrite);

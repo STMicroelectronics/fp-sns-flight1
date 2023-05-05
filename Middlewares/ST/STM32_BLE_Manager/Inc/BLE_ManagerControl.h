@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_ManagerControl.h
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Control Compilation defines
   ******************************************************************************
   * @attention
@@ -39,9 +39,10 @@
 #endif /* BLE_MANAGER_USED_PLATFORM */
 
    
-#if ((!defined BLUENRG_LP) && (!defined BLUENRG_MS) && (!defined BLUENRG_1_2) && (!defined BLUE_WB))
-  #error "It's necessary to set the of the BlueNRG type: BLUENRG_LP/BLUENRG_MS/BLUENRG_1_2"
-#endif /* ((!defined BLUENRG_LP) && (!defined BLUENRG_MS) && (!defined BLUENRG_1_2)) */
+//#if ((BLUE_CORE == BLUENRG_1_2) || (BLUE_CORE == BLUENRG_MS) || (BLUE_CORE == BLUENRG_LP) || (BLUE_CORE == BLUE_WB))
+#if ((!defined BLUE_CORE) || ((BLUE_CORE < 0x00) || (BLUE_CORE > 0x03)))
+  #error "It's necessary to set the of the BlueNRG type: BLUENRG_1_2/BLUENRG_MS/BLUENRG_LP/BLUE_WB"
+#endif /* ((BLUE_CORE != BLUENRG_1_2) || (BLUE_CORE != BLUENRG_MS) || (BLUE_CORE != BLUENRG_LP) || (BLUE_CORE != BLUE_WB)) */
 
 #ifdef __cplusplus
 }

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_TimeDomain.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add BLE Time Domain info services using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -138,8 +138,8 @@ tBleStatus BLE_TimeDomainUpdate(BLE_MANAGER_TimeDomainGenericValue_t PeakValue, 
   
   ret = ACI_GATT_UPDATE_CHAR_VALUE(&BleCharTimeDomain, 0, 20,Buff);
   
-  if (ret != BLE_STATUS_SUCCESS){
-    if(ret != BLE_STATUS_INSUFFICIENT_RESOURCES) {
+  if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
+    if(ret != (tBleStatus)BLE_STATUS_INSUFFICIENT_RESOURCES) {
       if(BLE_StdErr_Service==BLE_SERV_ENABLE){
         BytesToWrite =(uint8_t)sprintf((char *)BufferToWrite, "Error Updating Time Domain Char\n");
         Stderr_Update(BufferToWrite,BytesToWrite);

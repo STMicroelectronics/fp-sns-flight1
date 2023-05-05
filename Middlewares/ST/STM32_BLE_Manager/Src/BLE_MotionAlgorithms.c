@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_MotionAlgorithms.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add Motion Algorithms service using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -60,7 +60,7 @@ BleCharTypeDef* BLE_InitMotionAlgorithmsService(void)
   BleCharPointer->Char_Value_Length=2+1+1; /* 2 byte timestamp, 1 byte action, 1 byte algorithm */
   BleCharPointer->Char_Properties = ((uint8_t)CHAR_PROP_NOTIFY) | ((uint8_t)CHAR_PROP_WRITE);
   BleCharPointer->Security_Permissions=ATTR_PERMISSION_NONE;
-  BleCharPointer->GATT_Evt_Mask=GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP;
+  BleCharPointer->GATT_Evt_Mask= ((uint8_t)GATT_NOTIFY_ATTRIBUTE_WRITE) | ((uint8_t)GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP);
   BleCharPointer->Enc_Key_Size=16;
   BleCharPointer->Is_Variable=1;
   

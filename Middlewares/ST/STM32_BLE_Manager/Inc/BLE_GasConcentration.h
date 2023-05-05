@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_GasConcentration.h
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Gas concentration info services APIs.
   ******************************************************************************
   * @attention
@@ -32,7 +32,7 @@ typedef void (*CustomNotifyEventGasConcentration_t)(BLE_NotifyEvent_t Event);
 
 /* Exported Variables ------------------------------------------------------- */
 extern CustomReadRequestGasConcentration_t CustomReadRequestGasConcentration;
-extern CustomNotifyEventGasConcentration_t CustomNotifyEventGacConcentration;
+extern CustomNotifyEventGasConcentration_t CustomNotifyEventGasConcentration;
 
 /* Exported functions ------------------------------------------------------- */
 

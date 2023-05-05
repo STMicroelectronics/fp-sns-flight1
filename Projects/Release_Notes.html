@@ -22,20 +22,100 @@
 <div class="col-sm-12 col-lg-4">
 <center>
 <h1 id="release-notes-for-fp-sns-flight1-projects">Release Notes for <mark>FP-SNS-FLIGHT1</mark> Projects</h1>
-<p>Copyright © 2022 STMicroelectronics<br />
+<p>Copyright © 2023 STMicroelectronics<br />
 </p>
 <a href="https://www.st.com" class="logo"><img src="../_htmresc/st_logo_2020.png" alt="ST logo" /></a>
 </center>
 <h1 id="purpose">Purpose</h1>
-<p>The <mark>FP-SNS-FLIGHT1</mark> Projects provide applications to aid understanding how to develop an application using the BLE Middleware for the BlueNRG-MS device and Lib_NDEF libraries middlewares.</p>
+<p>The <mark>FP-SNS-FLIGHT1</mark> Projects provide applications to aid understanding how to develop an application using time-of-flight sensors board and the BLE Middleware for the BlueNRG-2 device.</p>
 </div>
 <div class="col-sm-12 col-lg-8">
 <h1 id="update-history">Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section1" checked aria-hidden="true"> <label for="collapse-section1" aria-hidden="true">V4.2.0 / 28-February-2022</label>
+<input type="checkbox" id="collapse-section2" checked aria-hidden="true"> <label for="collapse-section2" aria-hidden="true">V5.0.0 / 06-March-2023</label>
 <div>
 <h2 id="main-changes">Main Changes</h2>
 <h3 id="maintenance-release">Maintenance release</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Headline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Added BootLoader Examples</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Replaced BlueNRG-MS with BlueNRG-2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Removed secure Bluetooth pairing</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C-code maintenance tonew of the HAL, drivers and middlewares version</td>
+</tr>
+</tbody>
+</table>
+<h2 id="contents">Contents</h2>
+<p><small>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</small></p>
+<p>Projects</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Board/Device</th>
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32F401RE-Nucleo</td>
+<td style="text-align: left;">Application <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="STM32F401RE-Nucleo\Applications\53L3A2\FLIGHT1">FLIGHT1</a></td>
+<td style="text-align: left;"><a href="STM32F401RE-Nucleo\Applications\53L3A2\FLIGHT1\readme.html">readme</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32F401RE-Nucleo</td>
+<td style="text-align: left;">Examples <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="STM32F401RE-Nucleo\Examples\BootLoader">BootLoader</a></td>
+<td style="text-align: left;"><a href="STM32F401RE-Nucleo\Examples\BootLoader\readme.html">readme</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32L476RG-Nucleo</td>
+<td style="text-align: left;">Application <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="STM32L476RG-Nucleo\Applications\53L3A2\FLIGHT1">FLIGHT1</a></td>
+<td style="text-align: left;"><a href="STM32L476RG-Nucleo\Applications\53L3A2\FLIGHT1\readme.html">readme</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L476RG-Nucleo</td>
+<td style="text-align: left;">Examples <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="STM32L476RG-Nucleo\Examples\BootLoader">BootLoader</a></td>
+<td style="text-align: left;"><a href="STM32L476RG-Nucleo\Examples\BootLoader\readme.html">readme</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
+<li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
+<li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK/V2</li>
+</ul>
+<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<ul>
+<li>STM32F401RE devices and STM32F401RE-Nucleo board RevB</li>
+<li>STM32L476RG devices and STM32L476RG-Nucleo board RevB</li>
+<li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32 Nucleo</li>
+<li>X-NUCLEO-53L3A2 Multi-targets ranging sensor expansion board based on VL53L3CX for STM32 Nucleo.</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section1" aria-hidden="true"> <label for="collapse-section1" aria-hidden="true">V4.2.0 / 28-February-2022</label>
+<div>
+<h2 id="main-changes-1">Main Changes</h2>
+<h3 id="maintenance-release-1">Maintenance release</h3>
 <table>
 <thead>
 <tr class="header">
@@ -48,7 +128,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="contents">Contents</h2>
+<h2 id="contents-1">Contents</h2>
 <p><small>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</small></p>
 <p>Projects</p>
 <table>
@@ -75,13 +155,13 @@
 </tr>
 </tbody>
 </table>
-<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1</li>
 <li>RealView Microcontroller Development Kit (Open Keil µVision 5 - MDK-ARM) toolchain V5.32.0</li>
 <li>STM32CubeIDE V1.8.0</li>
 </ul>
-<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
 <ul>
 <li>STM32F401RE devices and STM32F401RE-Nucleo board RevB</li>
 <li>STM32L476RG devices and STM32L476RG-Nucleo board RevB</li>

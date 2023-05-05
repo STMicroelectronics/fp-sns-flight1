@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_TimeDomainAlarmAccPeakStatus.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add BLE Time Domain Alarm Acc Peak Status info services using vendor
   *          specific profiles.
   ******************************************************************************
@@ -104,8 +104,8 @@ tBleStatus BLE_TD_AlarmAccPeakStatusUpdate(sBLE_Manager_TD_AlarmAccPeakStatusAla
   
   ret = ACI_GATT_UPDATE_CHAR_VALUE(&BleCharTD_AlarmAccPeakStatus, 0, 2+13, Buff);
   
-  if (ret != BLE_STATUS_SUCCESS){
-    if(ret != BLE_STATUS_INSUFFICIENT_RESOURCES) {
+  if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
+    if(ret != (tBleStatus)BLE_STATUS_INSUFFICIENT_RESOURCES) {
       if(BLE_StdErr_Service==BLE_SERV_ENABLE){
         BytesToWrite = (uint8_t)sprintf((char *)BufferToWrite, "Error Updating FFT Alarm Acc Peak Status Char\n");
         Stderr_Update(BufferToWrite,BytesToWrite);

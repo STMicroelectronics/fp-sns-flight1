@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_Piano.h
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   BLE_Pianoinfo services APIs.
   ******************************************************************************
   * @attention
@@ -27,12 +27,12 @@
 #endif
    
 /* Exported typedef --------------------------------------------------------- */
-typedef void (*CustomWriteRequestPianoFunction)(uint8_t * att_data, uint8_t data_length);
+typedef void (*CustomWriteRequestPiano_t)(uint8_t * att_data, uint8_t data_length);
 typedef void (*CustomNotifyEventPiano_t)(BLE_NotifyEvent_t Event);
 
 /* Exported Variables ------------------------------------------------------- */
 extern CustomNotifyEventPiano_t CustomNotifyEventPiano;
-extern CustomWriteRequestPianoFunction CustomWriteRequestPianoFunctionPointer;
+extern CustomWriteRequestPiano_t CustomWriteRequestPiano;
 
 /* Exported defines --------------------------------------------------------- */
 #define BLE_PIANO_START 1

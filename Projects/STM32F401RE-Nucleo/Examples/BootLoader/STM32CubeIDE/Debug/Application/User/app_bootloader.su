@@ -1,0 +1,3 @@
+C:/MyFolder/01_GitRepoProject/FP-SNS-FLIGHT1/Firmware/Projects/STM32F401RE-Nucleo/Examples/BootLoader/Src/app_bootloader.c:135:6:MX_BootLoader_Init	8	static
+C:/MyFolder/01_GitRepoProject/FP-SNS-FLIGHT1/Firmware/Projects/STM32F401RE-Nucleo/Examples/BootLoader/Src/app_bootloader.c:157:6:MX_BootLoader_Process	4	static
+C:/MyFolder/01_GitRepoProject/FP-SNS-FLIGHT1/Firmware/Projects/STM32F401RE-Nucleo/Examples/BootLoader/Src/app_bootloader.c:175:13:BootLoader	96	static,ignoring_inline_asm

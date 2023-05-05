@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_FiniteStateMachine.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add Machine Learning info services using vendor specific
   *          profiles.
   ******************************************************************************
@@ -28,7 +28,8 @@
 #define COPY_FINITE_STATE_MACHINE_CHAR_UUID(uuid_struct) COPY_UUID_128(uuid_struct,0x00,0x00,0x00,0x10,0x00,0x02,0x11,0xe1,0xac,0x36,0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
 /* Exported variables --------------------------------------------------------*/
-CustomNotifyEventFiniteStateMachine_t CustomNotifyEventFiniteStateMachine=NULL;
+CustomNotifyEventFiniteStateMachine_t CustomNotifyEventFiniteStateMachine = NULL;
+CustomReadFiniteStateMachine_t CustomReadFiniteStateMachine = NULL;
 
 /* Private variables ---------------------------------------------------------*/
 /* Data structure pointer for Finite State Machine info service */
@@ -38,6 +39,18 @@ static BLE_FiniteStateMachineNumReg_t BleNumReg = BLE_FSM_16_REG;
 
 /* Private functions ---------------------------------------------------------*/
 static void AttrMod_Request_FiniteStateMachine(void *BleCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
+
+#if (BLUE_CORE != BLUENRG_LP)
+static void Read_Request_FiniteStateMachine(void *BleCharPointer,uint16_t handle);
+#else /* (BLUE_CORE != BLUENRG_LP) */
+static void Read_Request_FiniteStateMachine(void *BleCharPointer,
+                             uint16_t handle,
+                             uint16_t Connection_Handle,
+                             uint8_t Operation_Type,
+                             uint16_t Attr_Val_Offset,
+                             uint8_t Data_Length,
+                             uint8_t Data[]);
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
  * @brief  Init Finite State Machine info service
@@ -53,6 +66,7 @@ BleCharTypeDef* BLE_InitFiniteStateMachineService(BLE_FiniteStateMachineNumReg_t
   BleCharPointer = &BleCharFiniteStateMachine;
   memset(BleCharPointer,0,sizeof(BleCharTypeDef));  
   BleCharPointer->AttrMod_Request_CB = AttrMod_Request_FiniteStateMachine;
+  BleCharPointer->Read_Request_CB = Read_Request_FiniteStateMachine;
   COPY_FINITE_STATE_MACHINE_CHAR_UUID((BleCharPointer->uuid));
   BleCharPointer->Char_UUID_Type =UUID_TYPE_128;
   
@@ -66,7 +80,7 @@ BleCharTypeDef* BLE_InitFiniteStateMachineService(BLE_FiniteStateMachineNumReg_t
   
   BleNumReg = NumReg;
   
-  BleCharPointer->Char_Properties=CHAR_PROP_NOTIFY;
+  BleCharPointer->Char_Properties=((uint8_t)CHAR_PROP_NOTIFY) | ((uint8_t)CHAR_PROP_READ);
   BleCharPointer->Security_Permissions=ATTR_PERMISSION_NONE;
   BleCharPointer->GATT_Evt_Mask=GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP;
   BleCharPointer->Enc_Key_Size=16;
@@ -76,6 +90,84 @@ BleCharTypeDef* BLE_InitFiniteStateMachineService(BLE_FiniteStateMachineNumReg_t
   
   return BleCharPointer;
 }
+
+/**
+ * @brief  This event is given when a read request is received by the server from the client.
+ * @param  void *VoidCharPointer
+ * @param  uint16_t handle Handle of the attribute
+ * @retval None
+ */
+#if (BLUE_CORE != BLUENRG_LP)
+static void Read_Request_FiniteStateMachine(void *VoidCharPointer,uint16_t handle)
+{
+  if(CustomReadFiniteStateMachine != NULL) {
+    uint8_t fsm_out[16];
+    uint8_t fsm_status_a_mainpage;
+    uint8_t fsm_status_b_mainpage;
+    CustomReadFiniteStateMachine(fsm_out, &fsm_status_a_mainpage,&fsm_status_b_mainpage);
+    BLE_FiniteStateMachineUpdate(fsm_out, &fsm_status_a_mainpage,&fsm_status_b_mainpage);
+  } else {
+    BLE_MANAGER_PRINTF("\r\n\nRead request FiniteStateMachine function not defined\r\n\n");
+  }
+}
+#else /* (BLUE_CORE != BLUENRG_LP) */
+static void Read_Request_FiniteStateMachine(void *BleCharPointer,
+                                 uint16_t handle,
+                                 uint16_t Connection_Handle,
+                                 uint8_t Operation_Type,
+                                 uint16_t Attr_Val_Offset,
+                                 uint8_t Data_Length,
+                                 uint8_t Data[])
+{
+  tBleStatus ret;
+  if(CustomReadFiniteStateMachine != NULL) {
+    uint8_t fsm_out[16];
+    uint8_t fsm_status_a_mainpage;
+    uint8_t fsm_status_b_mainpage;
+    /* 2 byte timestamp, 16 FSM registers output, 2 FSM output state */
+    uint8_t dimByte;
+    uint8_t buff[2+16+2];
+    CustomReadFiniteStateMachine(fsm_out, &fsm_status_a_mainpage,&fsm_status_b_mainpage);
+    
+    STORE_LE_16(buff  ,(HAL_GetTick()>>3));
+    
+    if(BleNumReg==BLE_FSM_16_REG) {
+      /* MFSM outputs registers */
+      memcpy(buff+2,fsm_out, 16U*sizeof(uint8_t));
+      
+      /* Status bit for FSM from 1 to 8   */
+      buff[2+16] = fsm_status_a_mainpage;
+      /* Status bit for FSM from 9 to 16   */
+      buff[2+16+1] = fsm_status_b_mainpage;
+      dimByte = 2+16+2;
+    } else {
+      /* FSM outputs registers */
+      memcpy(buff+2,fsm_out, 8U*sizeof(uint8_t));
+      
+      /* Status bit for FSM from 1 to 8   */
+      buff[2+8] = fsm_status_a_mainpage;
+      dimByte = 2+8+1;
+    }
+    ret = aci_gatt_srv_write_handle_value_nwk(handle, 0, dimByte,buff);
+    if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
+      if(BLE_StdErr_Service==BLE_SERV_ENABLE){
+        BytesToWrite = (uint8_t)sprintf((char *)BufferToWrite, "Error Updating FiniteStateMachine Char\n");
+        Stderr_Update(BufferToWrite,BytesToWrite);
+      } else {
+        BLE_MANAGER_PRINTF("Error: Updating FiniteStateMachine Char\r\n");
+      }
+    }
+  } else {
+    BLE_MANAGER_PRINTF("\r\n\nRead request FiniteStateMachine function not defined\r\n\n");
+  }
+  ret = aci_gatt_srv_authorize_resp_nwk(Connection_Handle, handle,
+                                      Operation_Type, 0, Attr_Val_Offset,
+                                      Data_Length, Data);
+  if( ret != BLE_STATUS_SUCCESS) {
+    BLE_MANAGER_PRINTF("aci_gatt_srv_authorize_resp_nwk() failed: 0x%02x\r\n", ret);
+  }
+}
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
  * @brief  Update Finite State Machine output registers characteristic
@@ -114,7 +206,7 @@ tBleStatus BLE_FiniteStateMachineUpdate(uint8_t *fsm_out, uint8_t *fsm_status_a_
     ret = ACI_GATT_UPDATE_CHAR_VALUE(&BleCharFiniteStateMachine, 0, 2+8+1, buff);
   }
 
-  if (ret != BLE_STATUS_SUCCESS){
+  if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
     if(BLE_StdErr_Service==BLE_SERV_ENABLE){
       BytesToWrite = (uint8_t)sprintf((char *)BufferToWrite, "Error Updating Finite State Machine Char\n");
       Stderr_Update(BufferToWrite,BytesToWrite);

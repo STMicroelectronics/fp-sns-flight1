@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_FiniteStateMachine.h
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Finite State Machine info services APIs.
   ******************************************************************************
   * @attention
@@ -28,6 +28,7 @@
 
 /* Exported typedef --------------------------------------------------------- */
 typedef void (*CustomNotifyEventFiniteStateMachine_t)(BLE_NotifyEvent_t Event);
+typedef void (*CustomReadFiniteStateMachine_t)(uint8_t *fsm_out, uint8_t *fsm_status_a_mainpage,uint8_t *fsm_status_b_mainpage);
 
 //Enum type Number Finite State Machine Registers
 typedef enum {
@@ -37,6 +38,7 @@ typedef enum {
 
 /* Exported Variables ------------------------------------------------------- */
 extern CustomNotifyEventFiniteStateMachine_t CustomNotifyEventFiniteStateMachine;
+extern CustomReadFiniteStateMachine_t CustomReadFiniteStateMachine;
 
 /* Exported functions ------------------------------------------------------- */
 

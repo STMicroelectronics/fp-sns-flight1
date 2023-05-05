@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_MachineLearningCore.h
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Machine Learning Core info services APIs.
   ******************************************************************************
   * @attention
@@ -28,6 +28,7 @@
 
 /* Exported typedef --------------------------------------------------------- */
 typedef void (*CustomNotifyEventMachineLearningCore_t)(BLE_NotifyEvent_t Event);
+typedef void (*CustomReadMachineLearningCore_t)(uint8_t *mlc_out, uint8_t *mlc_status_mainpage);
 
 //Enum type Number Machine Learning Core Registers
 typedef enum {
@@ -37,6 +38,7 @@ typedef enum {
 
 /* Exported Variables ------------------------------------------------------- */
 extern CustomNotifyEventMachineLearningCore_t CustomNotifyEventMachineLearningCore;
+extern CustomReadMachineLearningCore_t CustomReadMachineLearningCore;
 
 /* Exported functions ------------------------------------------------------- */
 

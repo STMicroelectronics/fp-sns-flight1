@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_Manager.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add bluetooth services using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -27,9 +27,6 @@
 #include "BLE_ManagerControl.h"
 
 /* Private define ---------------------------------------------------------------*/
-#ifndef MIN
-#define MIN(a,b)            ((a) < (b) )? (a) : (b)
-#endif
 
 /* Max Number of Bonded Devices */
 #define BLE_MANAGER_MAX_BONDED_DEVICES 3
@@ -103,13 +100,6 @@ typedef struct {
   char *CommandString;
 } BLE_ExtConfigCommand_t;
 
-//Structure for saving the Custom Commands
-typedef struct {
-  char CommandName[BLE_MANAGER_CUSTOM_COMMAND_MAX_LEGHT];
-  BLE_CustomCommandTypes_t CommandType;
-  void *NextCommand;
-} BLE_ExtCustomCommand_t;
-
 /* Exported variables -----------------------------------------------------------*/
 /* Identifies if the configuration service are enabled or not */
 BLE_ServEnab_t BLE_Conf_Service;
@@ -152,6 +142,7 @@ CustomDebugConsoleParsing_t CustomDebugConsoleParsingCallback;
 CustomAttrModConfig_t CustomAttrModConfigCallback;
 CustomWriteRequestConfig_t CustomWriteRequestConfigCallback;
 
+#ifndef BLE_MANAGER_NO_PARSON
 /**************** Extended Configuration *************************/
 //For Reboot on DFU Command
 CustomExtConfigRebootOnDFUModeCommand_t CustomExtConfigRebootOnDFUModeCommandCallback;
@@ -200,7 +191,7 @@ CustomExtConfigSetSensorsConfigCommands_t CustomExtConfigSetSensorsConfigCommand
 static BLE_ExtConfigCommand_t StandardExtConfigCommands[EXT_CONFIG_COMMAND_NUMBER] = {
   {EXT_CONFIG_COM_NOT_VALID,"NULL"},
   {EXT_CONFIG_COM_READ_COMMAND,"ReadCommand"},
-  {EXT_CONFIG_COM_READ_CUSTOM_COMMAND,"ReadCustomCommand"},
+  {EXT_CONFIG_COM_READ_CUSTOM_COMMAND,BLE_MANAGER_READ_CUSTOM_COMMAND},
   {EXT_CONFIG_COM_READ_CERT,"ReadCert"},
   {EXT_CONFIG_COM_READ_UID,"UID"},
   {EXT_CONFIG_COM_READ_VER_FW,"VersionFw"},
@@ -223,8 +214,9 @@ static BLE_ExtConfigCommand_t StandardExtConfigCommands[EXT_CONFIG_COMMAND_NUMBE
 };
 
 //Table for Custom Commands:
-static BLE_ExtCustomCommand_t *CustomCommands=NULL;
-static BLE_ExtCustomCommand_t *LastCustomCommand=NULL;
+BLE_ExtCustomCommand_t *ExtConfigCustomCommands=NULL;
+BLE_ExtCustomCommand_t *ExtConfigLastCustomCommand=NULL;
+#endif /* BLE_MANAGER_NO_PARSON */
 
 static uint8_t LastStderrBuffer[DEFAULT_MAX_STDERR_CHAR_LEN];
 static uint8_t LastStderrLen;
@@ -232,21 +224,23 @@ static uint8_t LastTermBuffer[DEFAULT_MAX_STDOUT_CHAR_LEN];
 static uint8_t LastTermLen;
 static uint16_t connection_handle;
 
-static uint8_t MaxBleCharStdOutLen;
-static uint8_t MaxBleCharStdErrLen;
+uint8_t MaxBleCharStdOutLen;
+uint8_t MaxBleCharStdErrLen;
 
 static BleCharTypeDef BleCharConfig;
 static BleCharTypeDef BleCharStdOut;
 static BleCharTypeDef BleCharStdErr;
+#ifndef BLE_MANAGER_NO_PARSON
 static BleCharTypeDef BleCharExtConfig;
 
 static uint8_t *hs_command_buffer;
+#endif /* BLE_MANAGER_NO_PARSON */
 
 static BleCharTypeDef *BleCharsArray[BLE_MANAGER_MAX_ALLOCABLE_CHARS];
 static uint8_t UsedBleChars;
 static uint8_t UsedStandardBleChars;
 
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
 /* ***************** BlueNRG-MS Stack functions prototype ***********************/
 void hci_le_connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
@@ -281,25 +275,27 @@ void aci_gap_pairing_complete_event(uint16_t Connection_Handle,
 
 void aci_gap_pass_key_req_event(uint16_t Connection_Handle);
 
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
 
 /* Private functions prototype --------------------------------------------------*/
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
 static void HCI_Event_CB(void *pckt);
-#else /* BLUENRG_MS */
-#ifndef BLUE_WB
+#else /* (BLUE_CORE == BLUENRG_MS) */
+#if (BLUE_CORE != BLUE_WB)
 static void APP_UserEvtRx(void *pData);
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
 static void UpdateWhiteList(void);
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
 
-#ifndef BLUE_WB
+#if (BLUE_CORE != BLUE_WB)
 static tBleStatus InitBleManager_BLE_Stack(void);
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
 
 static tBleStatus InitBleManagerServices(void);
 
+#ifndef BLE_MANAGER_NO_PARSON
 static tBleStatus BLE_UpdateExtConf(uint8_t *data,uint8_t length);
+#endif /* BLE_MANAGER_NO_PARSON */
 
 static tBleStatus BLE_Manager_AddFeaturesService(void);
 static tBleStatus BLE_Manager_AddConsoleService(void);
@@ -308,10 +304,10 @@ static tBleStatus BLE_Manager_AddConfigService(void);
 static tBleStatus UpdateTermStdOut(uint8_t *data,uint8_t length);
 static tBleStatus UpdateTermStdErr(uint8_t *data,uint8_t length);
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   static void Read_Request_StdErr(void *VoidCharPointer,uint16_t handle);
   static void Read_Request_Term(void *VoidCharPointer,uint16_t handle);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   static void Read_Request_StdErr(void *VoidCharPointer,
                                  uint16_t handle,
                                  uint16_t Connection_Handle,
@@ -326,20 +322,22 @@ static tBleStatus UpdateTermStdErr(uint8_t *data,uint8_t length);
                                  uint16_t Attr_Val_Offset,
                                  uint8_t Data_Length,
                                  uint8_t Data[]);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
+#ifndef BLE_MANAGER_NO_PARSON
 static BLE_ExtConfigCommandType BLE_ExtConfig_ExtractCommandType(uint8_t *hs_command_buffer);
 
 static void AttrMod_Request_ExtConfig(void *VoidCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
 static void Write_Request_ExtConfig(void *VoidCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
 static void ClearSingleCommand(BLE_ExtCustomCommand_t *Command);
 
-static void ResetBleManagerCallbackFunctionPointer(void);
-
 static void create_JSON_SensorDescriptor(COM_SensorDescriptor_t *sensor_descriptor, JSON_Value *tempJSON);
 static void create_JSON_SensorStatus(COM_Sensor_t *sensor, JSON_Value *tempJSON);
 static void create_JSON_SubSensorDescriptor(COM_SubSensorDescriptor_t *sub_sensor_descriptor, JSON_Value *tempJSON);
 static void create_JSON_SubSensorStatus(COM_SubSensorStatus_t *sub_sensor_status, JSON_Value *tempJSON);
+#endif /* BLE_MANAGER_NO_PARSON */
+
+static void ResetBleManagerCallbackFunctionPointer(void);
 
 /* Private functions ------------------------------------------------------------*/
 /**
@@ -351,45 +349,45 @@ static tBleStatus BLE_Manager_AddConfigService(void)
 {
   tBleStatus ret;
   
-#ifndef BLUENRG_MS
+#if (BLUE_CORE != BLUENRG_MS)
   Service_UUID_t service_uuid;
   Char_UUID_t char_uuid;
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE != BLUENRG_MS) */
   
   uint8_t uuid[16];
   
   COPY_CONFIG_SERVICE_UUID(uuid);
   
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 1+3,&(BleCharConfig.Service_Handle));
-#else /* BLUENRG_MS */
-  BLE_memcpy(&service_uuid.Service_UUID_128, uuid, 16);
-  #ifndef BLUENRG_LP
+#else /* (BLUE_CORE == BLUENRG_MS) */
+  BLE_MemCpy(&service_uuid.Service_UUID_128, uuid, 16);
+  #if (BLUE_CORE != BLUENRG_LP)
     ret = aci_gatt_add_service(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, 1+3,&(BleCharConfig.Service_Handle));
-  #else /* BLUENRG_LP */
+  #else /* (BLUE_CORE != BLUENRG_LP) */
     ret = aci_gatt_srv_add_service_nwk(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, 1+3,&(BleCharConfig.Service_Handle));
-  #endif /* BLUENRG_LP */
-#endif /* BLUENRG_MS */
+  #endif /* (BLUE_CORE != BLUENRG_LP) */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
   
   if (ret != (tBleStatus)BLE_STATUS_SUCCESS) {
     goto EndLabel;
   }
   
-#ifndef BLUENRG_MS
-  BLE_memcpy(&char_uuid.Char_UUID_128, BleCharConfig.uuid, 16);
-#endif /* BLUENRG_MS */
+#if (BLUE_CORE != BLUENRG_MS)
+  BLE_MemCpy(&char_uuid.Char_UUID_128, BleCharConfig.uuid, 16);
+#endif /* (BLUE_CORE != BLUENRG_MS) */
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   ret =  aci_gatt_add_char(BleCharConfig.Service_Handle,
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   ret =  aci_gatt_srv_add_char_nwk(BleCharConfig.Service_Handle,
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
                            BleCharConfig.Char_UUID_Type,
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
                            BleCharConfig.uuid,
-#else /* BLUENRG_MS */						   
+#else /* (BLUE_CORE == BLUENRG_MS) */						   
                            &char_uuid,
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
                            BleCharConfig.Char_Value_Length,
                            BleCharConfig.Char_Properties,
                            BleCharConfig.Security_Permissions,
@@ -412,45 +410,45 @@ static tBleStatus BLE_Manager_AddConsoleService(void)
 {
   tBleStatus ret;
   
-#ifndef BLUENRG_MS
+#if (BLUE_CORE != BLUENRG_MS)
   Service_UUID_t service_uuid;
   Char_UUID_t char_uuid;
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE != BLUENRG_MS) */
   
   uint8_t uuid[16];
   
   COPY_CONSOLE_SERVICE_UUID(uuid);
   
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 1+(3*2),&(BleCharStdOut.Service_Handle));
-#else /* BLUENRG_MS */  
-  BLE_memcpy(&service_uuid.Service_UUID_128, uuid, 16);
-  #ifndef BLUENRG_LP
+#else /* (BLUE_CORE == BLUENRG_MS) */  
+  BLE_MemCpy(&service_uuid.Service_UUID_128, uuid, 16);
+  #if (BLUE_CORE != BLUENRG_LP)
     ret = aci_gatt_add_service(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, 1+(3*2),&(BleCharStdOut.Service_Handle));
-  #else /* BLUENRG_LP */
+  #else /* (BLUE_CORE != BLUENRG_LP) */
     ret = aci_gatt_srv_add_service_nwk(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, 1+(3*2),&(BleCharStdOut.Service_Handle));
-  #endif /* BLUENRG_LP */
-#endif /* BLUENRG_MS */
+  #endif /* (BLUE_CORE != BLUENRG_LP) */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
   
   if (ret != (tBleStatus)BLE_STATUS_SUCCESS) {
     goto EndLabel;
   }  
   
-#ifndef BLUENRG_MS
-  BLE_memcpy(&char_uuid.Char_UUID_128, BleCharStdOut.uuid, 16);
-#endif /* BLUENRG_MS */
+#if (BLUE_CORE != BLUENRG_MS)
+  BLE_MemCpy(&char_uuid.Char_UUID_128, BleCharStdOut.uuid, 16);
+#endif /* (BLUE_CORE != BLUENRG_MS) */
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   ret =  aci_gatt_add_char(BleCharStdOut.Service_Handle,
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   ret =  aci_gatt_srv_add_char_nwk(BleCharStdOut.Service_Handle,
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
                            BleCharStdOut.Char_UUID_Type, 
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
                            BleCharStdOut.uuid,
-#else /* BLUENRG_MS */						   
+#else /* (BLUE_CORE == BLUENRG_MS) */						   
                            &char_uuid,
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
                            BleCharStdOut.Char_Value_Length,
                            BleCharStdOut.Char_Properties,
                            BleCharStdOut.Security_Permissions,
@@ -465,22 +463,22 @@ static tBleStatus BLE_Manager_AddConsoleService(void)
   
   BleCharStdErr.Service_Handle = BleCharStdOut.Service_Handle;
   
-#ifndef BLUENRG_MS
-  BLE_memcpy(&char_uuid.Char_UUID_128, BleCharStdErr.uuid, 16);
-#endif /* BLUENRG_MS */
+#if (BLUE_CORE != BLUENRG_MS)
+  BLE_MemCpy(&char_uuid.Char_UUID_128, BleCharStdErr.uuid, 16);
+#endif /* (BLUE_CORE != BLUENRG_MS) */
 
  
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   ret =  aci_gatt_add_char(BleCharStdErr.Service_Handle,
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   ret =  aci_gatt_srv_add_char_nwk(BleCharStdErr.Service_Handle,
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
                            BleCharStdErr.Char_UUID_Type, 
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
                            BleCharStdErr.uuid,
-#else /* BLUENRG_MS */						   
+#else /* (BLUE_CORE == BLUENRG_MS) */						   
                            &char_uuid,
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
                            BleCharStdErr.Char_Value_Length,
                            BleCharStdErr.Char_Properties,
                            BleCharStdErr.Security_Permissions,
@@ -523,7 +521,7 @@ static tBleStatus UpdateTermStdErr(uint8_t *data,uint8_t length)
   return BLE_STATUS_SUCCESS;
 }
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 /**
 * @brief  Update Stderr characteristic value after a read request
 * @param None
@@ -589,7 +587,7 @@ static void Read_Request_StdErr(void *VoidCharPointer,uint16_t handle)
   BLE_MANAGER_PRINTF("Read for StdErr\r\n");
 #endif
 }
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 /**
 * @brief  This event is given when a read request is received by the server from the client.
 * @param  void *VoidCharPointer
@@ -655,7 +653,7 @@ static void Read_Request_StdErr(void *VoidCharPointer,
   BLE_MANAGER_PRINTF("Read for StdErr\r\n");
 #endif
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
 * @brief  This function is called when there is a change on the gatt attribute
@@ -756,6 +754,7 @@ static void AttrMod_Request_Term(void *VoidCharPointer,uint16_t attr_handle, uin
   }
 }
 
+#ifndef BLE_MANAGER_NO_PARSON
 /**
 * @brief  This function is called when there is a change on the gatt attribute
 *         With this function it's possible to understand if Extended Configuration characteristic value is subscribed or not to the one service
@@ -967,7 +966,6 @@ static void Write_Request_ExtConfig(void *VoidCharPointer,uint16_t attr_handle, 
     /* There is a valid command to execute */
     BLE_ExtConfigCommandType CommandType;
     uint8_t LocalBufferToWrite[2048];
-    uint8_t ValidCustomCommand=0;
     
     CommandType = BLE_ExtConfig_ExtractCommandType(hs_command_buffer);
     
@@ -1262,10 +1260,10 @@ static void Write_Request_ExtConfig(void *VoidCharPointer,uint16_t attr_handle, 
         BLE_MANAGER_PRINTF("Command ReadBanksFwId\r\n");
         CustomExtConfigReadBanksFwIdCommandCallback(&CurBank,&FwId1,&FwId2);
 
-        json_object_dotset_number(tempJSON_Obj, "BankStatus.currentBank", CurBank);
-        sprintf((char *)LocalBufferToWrite,"0x%X",FwId1);
+        json_object_dotset_number(tempJSON_Obj, "BankStatus.currentBank", (double)CurBank);
+        sprintf((char *)LocalBufferToWrite,"0x%02X",FwId1);
         json_object_dotset_string(tempJSON_Obj, "BankStatus.fwId1", (char *)LocalBufferToWrite);
-        sprintf((char *)LocalBufferToWrite,"0x%X",FwId2);
+        sprintf((char *)LocalBufferToWrite,"0x%02X",FwId2);
         json_object_dotset_string(tempJSON_Obj, "BankStatus.fwId2", (char *)LocalBufferToWrite);
 
         /* convert to a json string and write as string */
@@ -1398,85 +1396,22 @@ static void Write_Request_ExtConfig(void *VoidCharPointer,uint16_t attr_handle, 
       //Check if it's a custom Command or not
       if(CustomExtConfigCustomCommandCallback!=NULL) {
         /* we need at least one Custom Command */
-        if(CustomCommands!=NULL) {
-          
-          JSON_Value *tempJSON = json_parse_string( (char *) hs_command_buffer);
-          JSON_Object *JSON_ParseHandler = json_value_get_object(tempJSON);
-          
-          /* Start from beginning of Custom Commands list*/
-          LastCustomCommand = CustomCommands;
-          /* Search if it's a custom Command defined by user */
-          while((ValidCustomCommand==0U) && (LastCustomCommand!=NULL)){
-            /* Check the command name */
-            if (strcmp(json_object_dotget_string(JSON_ParseHandler,"command"),LastCustomCommand->CommandName) == 0) {
-              ValidCustomCommand=1;
+        if(ExtConfigCustomCommands!=NULL) {
+          BLE_CustomCommadResult_t *CommandResult = ParseCustomCommand(ExtConfigCustomCommands,hs_command_buffer);
+          if(CommandResult!=NULL) {
+            CustomExtConfigCustomCommandCallback(CommandResult);
+            if(CommandResult->CommandName!=NULL) {
+              BLE_FreeFunction(CommandResult->CommandName);
             }
-            /* Move to the Next Command if we didn't find nothing*/
-            if(ValidCustomCommand==0U) {
-              LastCustomCommand = (BLE_ExtCustomCommand_t *) LastCustomCommand->NextCommand;
+            if(CommandResult->StringValue!=NULL) {
+              BLE_FreeFunction(CommandResult->StringValue);
             }
+            BLE_FreeFunction(CommandResult);
           }
-          /* If we have found a valid Custom Command extract the values */
-          if(ValidCustomCommand) {
-            BLE_CustomCommadResult_t CommandResult;
-            
-            CommandResult.CommandName= (uint8_t *)LastCustomCommand->CommandName;
-            CommandResult.CommandType= LastCustomCommand->CommandType;
-            
-            switch(LastCustomCommand->CommandType) { 
-            case BLE_CUSTOM_COMMAND_VOID:
-              {
-              BLE_MANAGER_PRINTF("Called Custom Void Command <%s>\r\n",LastCustomCommand->CommandName);
-              CommandResult.IntValue= 0;
-              CommandResult.StringValue= NULL;
-              break;
-              }
-            case BLE_CUSTOM_COMMAND_INTEGER:
-            case BLE_CUSTOM_COMMAND_ENUM_INTEGER:
-              if(json_object_dothas_value(JSON_ParseHandler,"argNumber")) {
-                int32_t NewValue = (int32_t)json_object_dotget_number(JSON_ParseHandler,"argNumber");
-                CommandResult.IntValue= NewValue;
-                CommandResult.StringValue= NULL;
-                BLE_MANAGER_PRINTF("Called Custom Integer Command <%s>\r\n",LastCustomCommand->CommandName);
-                BLE_MANAGER_PRINTF("\tNumber=%ld\r\n",NewValue);
-              }
-              break;
-            case BLE_CUSTOM_COMMAND_BOOLEAN:
-              if(json_object_dothas_value(JSON_ParseHandler,"argString")) {
-                uint8_t *NewString = (uint8_t *)json_object_dotget_string(JSON_ParseHandler,"argString");
-                
-                if(strncmp((char*)NewString,"true",4)==0)
-                  CommandResult.IntValue= 1;
-                
-                if(strncmp((char*)NewString,"false",5)==0)
-                  CommandResult.IntValue= 0;
-                
-                CommandResult.StringValue= NULL;
-                BLE_MANAGER_PRINTF("Called Custom Boolean Command <%s>\r\n",LastCustomCommand->CommandName);
-                BLE_MANAGER_PRINTF("\tBoolean=<%s>\r\n",NewString);
-              }
-              break;
-            case BLE_CUSTOM_COMMAND_STRING:
-            case BLE_CUSTOM_COMMAND_ENUM_STRING:
-              if(json_object_dothas_value(JSON_ParseHandler,"argString")) {
-                uint8_t *NewString = (uint8_t *)json_object_dotget_string(JSON_ParseHandler,"argString");
-                CommandResult.IntValue= 0;
-                CommandResult.StringValue= NewString;
-                BLE_MANAGER_PRINTF("Called Custom String Command <%s>\r\n",LastCustomCommand->CommandName);
-                BLE_MANAGER_PRINTF("\tString=<%s>\r\n",NewString);
-              }
-              break;
-            default:
-              break;
-            }
-            
-            CustomExtConfigCustomCommandCallback(&CommandResult);
-          }
-          json_value_free(tempJSON);
+        } else {
+          BLE_MANAGER_PRINTF("Error: Command Not Valid\r\n");
         }
-      }
-        
-      if(ValidCustomCommand==0U) {
+      } else {
         BLE_MANAGER_PRINTF("Error: Command Not Valid\r\n");
       }
       break;
@@ -1486,17 +1421,122 @@ static void Write_Request_ExtConfig(void *VoidCharPointer,uint16_t attr_handle, 
 }
 
 /**
-* @brief  Clear the Custom Command List 
-* @param  None
+* @brief  This function Try to search if there is a valid Custom Command
+* @param  BLE_ExtCustomCommand_t *LocCustomCommands Pointer to the Custom Commands List
+* @param  uint8_t *hs_command_buffer pointer to json formatted string
 * @retval None
 */
-void ClearCustomCommandsList(void) {
-  if(CustomCommands!=NULL) {
-    if(CustomCommands->NextCommand!=NULL) {
-      ClearSingleCommand((BLE_ExtCustomCommand_t *)CustomCommands->NextCommand);
+BLE_CustomCommadResult_t *ParseCustomCommand(BLE_ExtCustomCommand_t *LocCustomCommands,uint8_t *hs_command_buffer)                        
+{
+  BLE_CustomCommadResult_t *CommandResult=NULL;
+  uint8_t ValidCustomCommand=0;
+  JSON_Value *tempJSON = json_parse_string( (char *) hs_command_buffer);
+  JSON_Object *JSON_ParseHandler = json_value_get_object(tempJSON);
+  /* Start from beginning of Custom Commands list*/
+  BLE_ExtCustomCommand_t *LocLastCustomCommand = LocCustomCommands;
+  
+  /* Search if it's a custom Command defined by user */
+  while((ValidCustomCommand==0U) && (LocLastCustomCommand!=NULL)){
+    /* Check the command name */
+    if (strncmp(json_object_dotget_string(JSON_ParseHandler,"command"),LocLastCustomCommand->CommandName,strlen(json_object_dotget_string(JSON_ParseHandler,"command"))) == 0) {
+      ValidCustomCommand=1;
     }
-    BLE_FreeFunction(CustomCommands);
-    LastCustomCommand = CustomCommands = NULL;
+    /* Move to the Next Command if we didn't find nothing*/
+    if(ValidCustomCommand==0U) {
+      LocLastCustomCommand = (BLE_ExtCustomCommand_t *) LocLastCustomCommand->NextCommand;
+    }
+  }
+  /* If we have found a valid Custom Command extract the values */
+  if(ValidCustomCommand) {
+    CommandResult = (BLE_CustomCommadResult_t *) BLE_MallocFunction(sizeof(BLE_CustomCommadResult_t));
+    if(CommandResult == NULL) {
+      BLE_MANAGER_PRINTF("Error: Mem alloc error: %d@%s\r\n", __LINE__, __FILE__);
+    }
+    
+    CommandResult->CommandName = (uint8_t*)BLE_MallocFunction(strlen((char*)LocLastCustomCommand->CommandName)+1U);
+    if(CommandResult->CommandName==NULL) {
+      BLE_MANAGER_PRINTF("Error: Mem alloc error: %d@%s\r\n", __LINE__, __FILE__);
+      BLE_FreeFunction(CommandResult);
+    } else {
+      sprintf((char *)CommandResult->CommandName,"%s",(char *)LocLastCustomCommand->CommandName);
+      CommandResult->CommandType= LocLastCustomCommand->CommandType;
+    }
+    
+    switch(LocLastCustomCommand->CommandType) { 
+    case BLE_CUSTOM_COMMAND_VOID:
+      {
+      BLE_MANAGER_PRINTF("Called Custom Void Command <%s>\r\n",LocLastCustomCommand->CommandName);
+      CommandResult->IntValue= 0;
+      CommandResult->StringValue= NULL;
+      break;
+      }
+    case BLE_CUSTOM_COMMAND_INTEGER:
+    case BLE_CUSTOM_COMMAND_ENUM_INTEGER:
+      if(json_object_dothas_value(JSON_ParseHandler,"argNumber")) {
+        int32_t NewValue = (int32_t)json_object_dotget_number(JSON_ParseHandler,"argNumber");
+        CommandResult->IntValue= NewValue;
+        CommandResult->StringValue= NULL;
+        BLE_MANAGER_PRINTF("Called Custom Integer Command <%s>\r\n",LocLastCustomCommand->CommandName);
+        BLE_MANAGER_PRINTF("\tNumber=%ld\r\n",NewValue);
+      }
+      break;
+    case BLE_CUSTOM_COMMAND_BOOLEAN:
+      if(json_object_dothas_value(JSON_ParseHandler,"argString")) {
+        uint8_t *NewString = (uint8_t *)json_object_dotget_string(JSON_ParseHandler,"argString");
+        
+        if(strncmp((char*)NewString,"true",4)==0)
+          CommandResult->IntValue= 1;
+        
+        if(strncmp((char*)NewString,"false",5)==0)
+          CommandResult->IntValue= 0;
+        
+        CommandResult->StringValue= NULL;
+        BLE_MANAGER_PRINTF("Called Custom Boolean Command <%s>\r\n",LocLastCustomCommand->CommandName);
+        BLE_MANAGER_PRINTF("\tBoolean=<%s>\r\n",NewString);
+      }
+      break;
+    case BLE_CUSTOM_COMMAND_STRING:
+    case BLE_CUSTOM_COMMAND_ENUM_STRING:
+      if(json_object_dothas_value(JSON_ParseHandler,"argString")) {
+        uint8_t *NewString = (uint8_t *)json_object_dotget_string(JSON_ParseHandler,"argString");
+        CommandResult->IntValue= 0;
+        CommandResult->StringValue = (uint8_t*)BLE_MallocFunction(strlen((char*)NewString)+1U);
+        if(CommandResult->StringValue==NULL) {
+          BLE_MANAGER_PRINTF("Error: Mem alloc error: %d@%s\r\n", __LINE__, __FILE__);
+          BLE_FreeFunction(CommandResult);
+        } else {
+          sprintf((char *)CommandResult->StringValue,"%s",(char *)NewString);
+          BLE_MANAGER_PRINTF("Called Custom String Command <%s>\r\n",LocLastCustomCommand->CommandName);
+          BLE_MANAGER_PRINTF("\tString=<%s>\r\n",NewString);
+        }
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  json_value_free(tempJSON);
+  
+  if(ValidCustomCommand==0U) {
+    BLE_MANAGER_PRINTF("Error: Custom Command Not Valid\r\n");
+  }
+  
+  return CommandResult;
+}
+
+/**
+* @brief  Clear the Custom Command List 
+* @param  BLE_ExtCustomCommand_t **LocCustomCommands Custom Commands Table
+* @param  BLE_ExtCustomCommand_t **LocLastCustomCommand Poiter to last Custom Command
+* @retval None
+*/
+void GenericClearCustomCommandsList(BLE_ExtCustomCommand_t **LocCustomCommands, BLE_ExtCustomCommand_t **LocLastCustomCommand) {
+  if((*LocCustomCommands)!=NULL) {
+    if((*LocCustomCommands)->NextCommand!=NULL) {
+      ClearSingleCommand((BLE_ExtCustomCommand_t *)(*LocCustomCommands)->NextCommand);
+    }
+    BLE_FreeFunction((*LocCustomCommands));
+    *LocLastCustomCommand = *LocCustomCommands = NULL;
   }
 }
 
@@ -1513,13 +1553,17 @@ static void ClearSingleCommand(BLE_ExtCustomCommand_t *Command)
 #if (BLE_DEBUG_LEVEL>1)
   BLE_MANAGER_PRINTF("Deleting Custom Command<%s>\r\n",Command->CommandName);
 #endif
+  BLE_FreeFunction(Command->CommandName);
   BLE_FreeFunction(Command);
 }
 
 /**
 * @brief  This function add a Custom Command
+* @param  BLE_ExtCustomCommand_t **LocCustomCommands Pointer to Custom Commands Table
+* @param  BLE_ExtCustomCommand_t **LocLastCustomCommand Poiter to Pointer to slast Custom Command
 * @param  char *CommandName Command Name
 * @param  BLE_CustomCommandTypes_t CommandType Command Type
+* @param  int32_t DefaultValue (for BLE_CUSTOM_COMMAND_INTEGER,BLE_CUSTOM_COMMAND_ENUM_INTEGER,BLE_CUSTOM_COMMAND_ENUM_STRING or BLE_CUSTOM_COMMAND_BOOLEAN)
 * @param  int32_t Min  Optional Minim value (BLE_MANAGER_CUSTOM_COMMAND_VALUE_NAN if not needed)
 * @param  int32_t Max Max value
 * @param  int32_t *ValidValuesInt array of Valid Integer Values (NULL if not needed)
@@ -1528,23 +1572,17 @@ static void ClearSingleCommand(BLE_ExtCustomCommand_t *Command)
 * @param  JSON_Array *JSON_SensorArray
 * @retval uint8_t Valid/NotValid Command (1/0)
 */
-uint8_t AddCustomCommand(char *CommandName,BLE_CustomCommandTypes_t CommandType, 
+uint8_t GenericAddCustomCommand(BLE_ExtCustomCommand_t **LocCustomCommands, BLE_ExtCustomCommand_t **LocLastCustomCommand,
+                         char *CommandName,BLE_CustomCommandTypes_t CommandType, int32_t DefaultValue,
                          int32_t Min, int32_t Max, int32_t *ValidValuesInt, char **ValidValuesString,char *ShortDesc,JSON_Array *JSON_SensorArray)
 {
   uint8_t Valid =1U;
   uint8_t Index;
   
-  //Check the Max Command Name length
-  if(strlen(CommandName) > BLE_MANAGER_CUSTOM_COMMAND_MAX_LEGHT) {
-    Valid=0U;
-  }
-  
-  if(Valid) {
-    //check that we are not using a Standard Command
-    for(Index=((uint8_t)EXT_CONFIG_COM_READ_COMMAND); ((Index<((uint8_t)EXT_CONFIG_COMMAND_NUMBER)) && (Valid==1U)); Index++) {
-      if(strncmp(StandardExtConfigCommands[Index].CommandString,CommandName,strlen(CommandName)) == 0) {
-        Valid =0U;
-      }
+  //check that we are not using a Standard Command
+  for(Index=((uint8_t)EXT_CONFIG_COM_READ_COMMAND); ((Index<((uint8_t)EXT_CONFIG_COMMAND_NUMBER)) && (Valid==1U)); Index++) {
+    if(strncmp(StandardExtConfigCommands[Index].CommandString,CommandName,strlen(CommandName)) == 0) {
+      Valid =0U;
     }
   }
   
@@ -1578,6 +1616,16 @@ uint8_t AddCustomCommand(char *CommandName,BLE_CustomCommandTypes_t CommandType,
     case  BLE_CUSTOM_COMMAND_ENUM_STRING:
       json_object_dotset_string(tempJSON1_Obj, "Type", "EnumString");
       break;
+    }
+    
+    //Add the Optional Default Value
+    if((CommandType==BLE_CUSTOM_COMMAND_INTEGER) ||
+       (CommandType==BLE_CUSTOM_COMMAND_BOOLEAN) ||
+       (CommandType==BLE_CUSTOM_COMMAND_ENUM_INTEGER) ||
+       (CommandType==BLE_CUSTOM_COMMAND_ENUM_STRING)) {
+      if(DefaultValue!= (int32_t)BLE_MANAGER_CUSTOM_COMMAND_VALUE_NAN) {
+        json_object_dotset_number(tempJSON1_Obj, "DefaultValue", (double)DefaultValue);
+      }
     }
     
     //Add the Optional Description
@@ -1630,60 +1678,76 @@ uint8_t AddCustomCommand(char *CommandName,BLE_CustomCommandTypes_t CommandType,
     json_array_append_value(JSON_SensorArray,tempJSON1);
     
     //Allocate a New Custom Command entry
-    if(CustomCommands==NULL) {
-      CustomCommands=(BLE_ExtCustomCommand_t*)BLE_MallocFunction(sizeof(BLE_ExtCustomCommand_t));
+    if((*LocCustomCommands)==NULL) {
+      (*LocCustomCommands)=(BLE_ExtCustomCommand_t*)BLE_MallocFunction(sizeof(BLE_ExtCustomCommand_t));
       
-      if(CustomCommands==NULL) {
+      if((*LocCustomCommands)==NULL) {
         BLE_MANAGER_PRINTF("Errror: Mem calloc error: %d@%s\r\n",__LINE__,__FILE__);
         return 0;
       }
       
-      LastCustomCommand = CustomCommands;
+      (*LocLastCustomCommand) = (*LocCustomCommands);
     } else {
-      LastCustomCommand->NextCommand = (void *) BLE_MallocFunction( sizeof(BLE_ExtCustomCommand_t));
-      if(CustomCommands==NULL) {
+      (*LocLastCustomCommand)->NextCommand = (void *) BLE_MallocFunction( sizeof(BLE_ExtCustomCommand_t));
+      if((*LocCustomCommands)==NULL) {
         BLE_MANAGER_PRINTF("Error: Mem calloc error %d@%s\r\n",__LINE__,__FILE__);
         return 0;
       }
-      LastCustomCommand = (BLE_ExtCustomCommand_t*) LastCustomCommand->NextCommand;
+      (*LocLastCustomCommand) = (BLE_ExtCustomCommand_t*) (*LocLastCustomCommand)->NextCommand;
     }
     //Fill the Custom Command
-    LastCustomCommand->CommandType = CommandType;
-    sprintf(LastCustomCommand->CommandName,"%s",CommandName);
-    LastCustomCommand->NextCommand = NULL;
+    (*LocLastCustomCommand)->CommandType = CommandType;
+    
+    //Alloc the size for commandName
+    (*LocLastCustomCommand)->CommandName = BLE_MallocFunction(strlen(CommandName)+1U);
+     if(((*LocLastCustomCommand)->CommandName)==NULL) {
+       BLE_MANAGER_PRINTF("Error: Mem calloc error %d@%s\r\n",__LINE__,__FILE__);
+       return 0;
+     }
+    sprintf((*LocLastCustomCommand)->CommandName,"%s",CommandName);
+    (*LocLastCustomCommand)->NextCommand = NULL;
 #if (BLE_DEBUG_LEVEL>1)
-    BLE_MANAGER_PRINTF("Adding Custom Command<%s>\r\n",LastCustomCommand->CommandName);
+    BLE_MANAGER_PRINTF("Adding Custom Command<%s>\r\n",(*LocLastCustomCommand)->CommandName);
 #endif
   }
   
   return Valid;
 }
 
+/**
+* @brief  Send a new List of Custom Commands for Extended Configuration
+* @param  None
+* @retval None
+*/
 void SendNewCustomCommandList(void) {
-     JSON_Value *tempJSON = json_value_init_object();
-      JSON_Object *tempJSON_Obj = json_value_get_object(tempJSON);
-      JSON_Array *JSON_SensorArray;
-      char* JSON_string_command = NULL;
-      uint32_t JSON_size =0;
-      
-      BLE_MANAGER_PRINTF("Command SendNewCustomCommandList\r\n");
+  JSON_Value *tempJSON = json_value_init_object();
+  JSON_Object *tempJSON_Obj = json_value_get_object(tempJSON);
+  JSON_Array *JSON_SensorArray;
+  char* JSON_string_command = NULL;
+  uint32_t JSON_size =0;
+  
+  BLE_MANAGER_PRINTF("Command SendNewCustomCommandList\r\n");
 
-      json_object_dotset_value(tempJSON_Obj, "CustomCommands", json_value_init_array());
-      JSON_SensorArray = json_object_dotget_array(tempJSON_Obj, "CustomCommands");
-      
-      //Filling the array
-      CustomExtConfigReadCustomCommandsCallback(JSON_SensorArray);
-      
-      /* convert to a json string and write as string */
-      JSON_string_command = json_serialize_to_string(tempJSON);
-      JSON_size = json_serialization_size(tempJSON);
-      
-      BLE_ExtConfiguration_Update((uint8_t*) JSON_string_command,JSON_size);
-      BLE_FreeFunction(JSON_string_command);
-      json_value_free(tempJSON);
+  json_object_dotset_value(tempJSON_Obj, "CustomCommands", json_value_init_array());
+  JSON_SensorArray = json_object_dotget_array(tempJSON_Obj, "CustomCommands");
+  
+  //Filling the array
+  CustomExtConfigReadCustomCommandsCallback(JSON_SensorArray);
+  
+  /* convert to a json string and write as string */
+  JSON_string_command = json_serialize_to_string(tempJSON);
+  JSON_size = json_serialization_size(tempJSON);
+  
+  BLE_ExtConfiguration_Update((uint8_t*) JSON_string_command,JSON_size);
+  BLE_FreeFunction(JSON_string_command);
+  json_value_free(tempJSON);
 }
 
-
+/**
+* @brief  Send one error message
+* @param  char *message error message
+* @retval None
+*/
 extern void SendError(char *message)
 {
   JSON_Value *tempJSON = json_value_init_object();
@@ -1703,6 +1767,12 @@ extern void SendError(char *message)
   BLE_FreeFunction(JSON_string_command);
   
 }
+
+/**
+* @brief  Send one Info message
+* @param  char *message Info message
+* @retval None
+*/
 void SendInfo(char *message)
 {
   JSON_Value *tempJSON = json_value_init_object();
@@ -1739,6 +1809,7 @@ void create_JSON_Sensor(COM_Sensor_t *sensor, JSON_Value *tempJSON)
   json_object_set_value(JSON_Sensor, "sensorStatus", statusJSON);
   create_JSON_SensorStatus(sensor, statusJSON);
 }
+#endif /* BLE_MANAGER_NO_PARSON */
 
 /**
 * @brief  This function is called when there is a change on the gatt attribute as consequence of write request for the Term service
@@ -1777,10 +1848,10 @@ static tBleStatus BLE_Manager_AddFeaturesService(void)
 {
   tBleStatus ret;
   
-#ifndef BLUENRG_MS  
+#if (BLUE_CORE != BLUENRG_MS)
   Service_UUID_t service_uuid;
   Char_UUID_t char_uuid;
-#endif /* BLUENRG_MS */ 
+#endif /* (BLUE_CORE != BLUENRG_MS) */ 
   
   uint8_t BleChar;
   uint8_t uuid[16];
@@ -1788,16 +1859,16 @@ static tBleStatus BLE_Manager_AddFeaturesService(void)
   uint8_t NumberCustomBLEChars = UsedBleChars-UsedStandardBleChars;
   
   COPY_FEATURES_SERVICE_UUID(uuid);
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, (1U+(3U*NumberCustomBLEChars)),&Service_Handle);
-#else /* BLUENRG_MS */
-  BLE_memcpy(&service_uuid.Service_UUID_128, uuid, 16);
-  #ifndef BLUENRG_LP
+#else /* (BLUE_CORE == BLUENRG_MS) */
+  BLE_MemCpy(&service_uuid.Service_UUID_128, uuid, 16);
+  #if (BLUE_CORE != BLUENRG_LP)
     ret = aci_gatt_add_service(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, (1U+(3U*NumberCustomBLEChars)),&Service_Handle);
-  #else /* BLUENRG_LP */
+  #else /* (BLUE_CORE != BLUENRG_LP) */
     ret = aci_gatt_srv_add_service_nwk(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, (1U+(3U*NumberCustomBLEChars)),&Service_Handle);
-  #endif /* BLUENRG_LP */
-#endif /* BLUENRG_MS */ 
+  #endif /* (BLUE_CORE != BLUENRG_LP) */
+#endif /* (BLUE_CORE == BLUENRG_MS) */ 
   
   if (ret != (tBleStatus)BLE_STATUS_SUCCESS) {
     goto EndLabel;
@@ -1805,21 +1876,21 @@ static tBleStatus BLE_Manager_AddFeaturesService(void)
   
   for(BleChar=UsedStandardBleChars;BleChar<UsedBleChars;BleChar++) {
     BleCharsArray[BleChar]->Service_Handle = Service_Handle;
-#ifndef BLUENRG_MS 
-    BLE_memcpy(&char_uuid.Char_UUID_128, BleCharsArray[BleChar]->uuid, 16);
-#endif /* BLUENRG_MS */ 
+#if (BLUE_CORE != BLUENRG_MS)
+    BLE_MemCpy(&char_uuid.Char_UUID_128, BleCharsArray[BleChar]->uuid, 16);
+#endif /* (BLUE_CORE != BLUENRG_MS) */ 
     
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
     ret =  aci_gatt_add_char(BleCharsArray[BleChar]->Service_Handle,
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
    ret =  aci_gatt_srv_add_char_nwk(BleCharsArray[BleChar]->Service_Handle,
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
                              BleCharsArray[BleChar]->Char_UUID_Type,
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
                              BleCharsArray[BleChar]->uuid,
-#else /* BLUENRG_MS */							 
+#else /* (BLUE_CORE == BLUENRG_MS) */							 
                              &char_uuid,
-#endif /* BLUENRG_MS */ 
+#endif /* (BLUE_CORE == BLUENRG_MS) */ 
                              BleCharsArray[BleChar]->Char_Value_Length,
                              BleCharsArray[BleChar]->Char_Properties,
                              BleCharsArray[BleChar]->Security_Permissions,
@@ -1856,11 +1927,11 @@ tBleStatus safe_aci_gatt_update_char_value(BleCharTypeDef *BleCharPointer,
 {
   tBleStatus ret = BLE_STATUS_INSUFFICIENT_RESOURCES;
   if (breath==0){
-    #ifndef BLUENRG_LP
+    #if (BLUE_CORE != BLUENRG_LP)
       ret = aci_gatt_update_char_value(BleCharPointer->Service_Handle,BleCharPointer->attr_handle,charValOffset,charValueLen,charValue);
-    #else /* BLUENRG_LP */
+    #else /* (BLUE_CORE != BLUENRG_LP) */
       ret = aci_gatt_srv_notify(connection_handle, BleCharPointer->attr_handle+1, GATT_NOTIFICATION, charValueLen, charValue);
-    #endif /* BLUENRG_LP */
+    #endif /* (BLUE_CORE != BLUENRG_LP) */
     
     if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
 #if (BLE_DEBUG_LEVEL>2)
@@ -1878,8 +1949,9 @@ tBleStatus safe_aci_gatt_update_char_value(BleCharTypeDef *BleCharPointer,
 }
 #endif /* ACC_BLUENRG_CONGESTION */
 
+#ifndef BLE_MANAGER_NO_PARSON
 /**
-* @brief 
+* @brief Parse Ext Configuration Command Type
 * @param  uint8_t *hs_command_buffer
 * @retval BLE_ExtConfigCommandType
 */
@@ -1895,7 +1967,7 @@ static BLE_ExtConfigCommandType BLE_ExtConfig_ExtractCommandType(uint8_t *hs_com
     uint8_t SearchCommand=(uint8_t)EXT_CONFIG_COM_READ_COMMAND;
     //Search the Command
     while((ReturnCode == EXT_CONFIG_COM_NOT_VALID) && (SearchCommand<((uint8_t)EXT_CONFIG_COMMAND_NUMBER))) {
-      if (strcmp(json_object_dotget_string(JSON_ParseHandler,"command"),StandardExtConfigCommands[SearchCommand].CommandString) == 0) {
+      if (strncmp(json_object_dotget_string(JSON_ParseHandler,"command"),StandardExtConfigCommands[SearchCommand].CommandString,strlen(json_object_dotget_string(JSON_ParseHandler,"command"))) == 0) {
         ReturnCode = StandardExtConfigCommands[SearchCommand].CommandType;
       }
       SearchCommand++;
@@ -1905,6 +1977,44 @@ static BLE_ExtConfigCommandType BLE_ExtConfig_ExtractCommandType(uint8_t *hs_com
   json_value_free(tempJSON);
   return ReturnCode;
 }
+
+/**
+* @brief Parse Configuration Command Type
+* @param  uint8_t *hs_command_buffer
+* @retval BLE_CustomCommadResult_t *CommandResult
+*/
+BLE_CustomCommadResult_t *AskGenericCustomCommands(uint8_t *hs_command_buffer)
+{
+  BLE_CustomCommadResult_t *CommandResult=NULL;
+  
+  /* Parse the Json for taking the pointer to the CommandName */
+  JSON_Value *tempJSON = json_parse_string( (char *) hs_command_buffer);
+  JSON_Object *JSON_ParseHandler = json_value_get_object(tempJSON);
+  
+  if (json_object_dothas_value(JSON_ParseHandler,"command")) {
+    if (strncmp(json_object_dotget_string(JSON_ParseHandler,"command"),StandardExtConfigCommands[EXT_CONFIG_COM_READ_CUSTOM_COMMAND].CommandString,strlen(json_object_dotget_string(JSON_ParseHandler,"command"))) == 0) {
+     /* The User has asked a List of Custom Command */
+      CommandResult = (BLE_CustomCommadResult_t *) BLE_MallocFunction(sizeof(BLE_CustomCommadResult_t));
+      if(CommandResult == NULL) {
+        BLE_MANAGER_PRINTF("Error: Mem alloc error: %d@%s\r\n", __LINE__, __FILE__);
+      } else {
+        CommandResult->CommandType= BLE_CUSTOM_COMMAND_VOID;
+        
+        CommandResult->CommandName = BLE_MallocFunction(strlen(BLE_MANAGER_READ_CUSTOM_COMMAND) + 1U);
+        if((CommandResult->CommandName)==NULL) {
+          BLE_MANAGER_PRINTF("Error: Mem alloc error: %d@%s\r\n", __LINE__, __FILE__);
+          BLE_FreeFunction(CommandResult);
+          CommandResult=NULL;
+        } else {
+          sprintf((char *) CommandResult->CommandName,"%s",BLE_MANAGER_READ_CUSTOM_COMMAND);
+        }
+      }
+    }
+  }
+  json_value_free(tempJSON);
+  return CommandResult;
+}
+
 
 /**
 * @brief  Update Extended Configuration characteristic value (when lenght is <=MaxBLECharLen)
@@ -1929,9 +2039,11 @@ static tBleStatus BLE_UpdateExtConf(uint8_t *data,uint8_t length)
   
   return ret;
 }
+#endif /* BLE_MANAGER_NO_PARSON */
 
 /* Exported functions -----------------------------------------------------------*/
 
+#ifndef BLE_MANAGER_NO_PARSON
 /**
 * @brief  Update Extended Configuration characteristic value
 * @param  uint8_t *data string to write
@@ -1954,7 +2066,7 @@ tBleStatus BLE_ExtConfiguration_Update(uint8_t *data,uint32_t length)
   JSON_string_command_wTP = BLE_MallocFunction(sizeof(uint8_t) * length_wTP);
   
   if(JSON_string_command_wTP==NULL) {
-    BLE_MANAGER_PRINTF("Error: Mem calloc error [%ld]: %d@%s\r\n",length,__LINE__,__FILE__);
+    BLE_MANAGER_PRINTF("Error: Mem calloc error [%lu]: %d@%s\r\n",length,__LINE__,__FILE__);
     return BLE_STATUS_ERROR;
   } else {
     tot_len = BLE_Command_TP_Encapsulate(JSON_string_command_wTP, data, length);
@@ -1973,6 +2085,7 @@ tBleStatus BLE_ExtConfiguration_Update(uint8_t *data,uint32_t length)
     return BLE_STATUS_SUCCESS;
   }
 }
+#endif /* BLE_MANAGER_NO_PARSON */
 
 /**
 * @brief Each time BLE FW stack raises the error code @ref ble_status_insufficient_resources (0x64),
@@ -2012,11 +2125,11 @@ tBleStatus aci_gatt_update_char_value_wrapper(BleCharTypeDef *BleCharPointer,
                                               uint8_t *charValue)
 {
   tBleStatus ret = BLE_STATUS_INSUFFICIENT_RESOURCES;
-  #ifndef BLUENRG_LP
+  #if (BLUE_CORE != BLUENRG_LP)
     ret = aci_gatt_update_char_value(BleCharPointer->Service_Handle,BleCharPointer->attr_handle,charValOffset,charValueLen,charValue);
-  #else /* BLUENRG_LP */
+  #else /* (BLUE_CORE != BLUENRG_LP) */
     ret = aci_gatt_srv_notify(connection_handle, BleCharPointer->attr_handle+1, GATT_NOTIFICATION, charValueLen, charValue);
-  #endif /* BLUENRG_LP */
+  #endif /* (BLUE_CORE != BLUENRG_LP) */
         
   if (ret != (tBleStatus)BLE_STATUS_SUCCESS){
 #if (BLE_DEBUG_LEVEL>2)
@@ -2078,11 +2191,11 @@ tBleStatus BLE_StdOutSendBuffer(uint8_t* buffer, uint8_t len)
 {
   tBleStatus ret;
   
-  #ifndef BLUENRG_LP
+  #if (BLUE_CORE != BLUENRG_LP)
     ret = aci_gatt_update_char_value(BleCharStdOut.Service_Handle, BleCharStdOut.attr_handle, 0, len, buffer);
-  #else /* BLUENRG_LP */
+  #else /* (BLUE_CORE != BLUENRG_LP) */
     ret = aci_gatt_srv_notify(connection_handle, BleCharStdOut.attr_handle+1, GATT_NOTIFICATION, len, buffer);
-  #endif /* BLUENRG_LP */
+  #endif /* (BLUE_CORE != BLUENRG_LP) */
   
   return ret;
 }
@@ -2179,24 +2292,25 @@ tBleStatus Config_Update_32(uint32_t Feature,uint8_t Command,uint32_t data)
   return BLE_STATUS_SUCCESS;
 }
 
+
+#if (BLUE_CORE != BLUENRG_LP)
 /**
-* @brief  Puts the device in connectable mode.
+* @brief  Update the Advertise Data
 * @param  None
 * @retval None
 */
-#ifndef BLUENRG_LP
 void updateAdvData()
 {
   /* Filling Manufacter Advertise data */
   manuf_data[0 ] = 8U;
   manuf_data[1 ] = 0x09U;
-  manuf_data[2 ] = BLE_StackValue.BoardName[0];/* Complete Name */
-  manuf_data[3 ] = BLE_StackValue.BoardName[1];
-  manuf_data[4 ] = BLE_StackValue.BoardName[2];
-  manuf_data[5 ] = BLE_StackValue.BoardName[3];
-  manuf_data[6 ] = BLE_StackValue.BoardName[4];
-  manuf_data[7 ] = BLE_StackValue.BoardName[5];
-  manuf_data[8 ] = BLE_StackValue.BoardName[6];           
+  manuf_data[2 ] = (uint8_t)BLE_StackValue.BoardName[0];/* Complete Name */
+  manuf_data[3 ] = (uint8_t)BLE_StackValue.BoardName[1];
+  manuf_data[4 ] = (uint8_t)BLE_StackValue.BoardName[2];
+  manuf_data[5 ] = (uint8_t)BLE_StackValue.BoardName[3];
+  manuf_data[6 ] = (uint8_t)BLE_StackValue.BoardName[4];
+  manuf_data[7 ] = (uint8_t)BLE_StackValue.BoardName[5];
+  manuf_data[8 ] = (uint8_t)BLE_StackValue.BoardName[6];           
   manuf_data[9 ] = 15U;
   manuf_data[10] = 0xFFU;
   manuf_data[11] = 0x30U;/* STM Manufacter AD */
@@ -2234,13 +2348,18 @@ void updateAdvData()
   } 
 }
 
+/**
+* @brief  Puts the device in connectable mode.
+* @param  None
+* @retval None
+*/
 void setConnectable(void)
 {
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   char local_name[8] = {AD_TYPE_COMPLETE_LOCAL_NAME,
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
   uint8_t local_name[8] = {AD_TYPE_COMPLETE_LOCAL_NAME,
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
   BLE_StackValue.BoardName[0],
   BLE_StackValue.BoardName[1],
   BLE_StackValue.BoardName[2],
@@ -2273,11 +2392,11 @@ void setConnectable(void)
     }
   } else {
     /* Advertising filter is enabled: enter in undirected connectable mode in order to use the advertising filter on bonded device */
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
 	RetStatus = aci_gap_set_undirected_connectable(BLE_StackValue.OwnAddressType, BLE_StackValue.AdvertisingFilter);
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
     RetStatus = aci_gap_set_undirected_connectable(0,0,BLE_StackValue.OwnAddressType, BLE_StackValue.AdvertisingFilter);
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
     if(RetStatus != (tBleStatus)BLE_STATUS_SUCCESS) {
       BLE_MANAGER_PRINTF("Error: aci_gap_set_undirected_connectable [%x] Filter=%x\r\n",RetStatus,BLE_StackValue.AdvertisingFilter);
       goto EndLabel;
@@ -2293,7 +2412,12 @@ void setConnectable(void)
 EndLabel:
   return;
 }
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
+/**
+* @brief  Puts the device in connectable mode.
+* @param  None
+* @retval None
+*/
 void setConnectable(void)
 {
   tBleStatus ret;
@@ -2380,9 +2504,31 @@ void setConnectable(void)
 EndLabel:
   return;
 }
-#endif
 
-#ifndef BLUENRG_LP
+/**
+* @brief  Update Advertise Data
+* @param  None
+* @retval None
+*/
+
+void updateAdvData()
+{
+  tBleStatus ret;
+  /* Set the Custom BLE Advertise Data */
+  BLE_SetCustomAdvertiseData(manuf_data);
+
+  ret = aci_gap_set_advertising_data_nwk(0, ADV_COMPLETE_DATA, BLE_MANAGER_ADVERTISE_DATA_LENGHT, manuf_data);
+  if(ret != BLE_STATUS_SUCCESS) {
+    BLE_MANAGER_PRINTF("aci_gap_set_advertising_data_nwk failed: 0x%02x\r\n", ret);
+  } else {
+    BLE_MANAGER_PRINTF("aci_gap_set_advertising_data_nwk\r\n");
+  }
+
+  return;
+}
+#endif /* (BLUE_CORE != BLUENRG_LP) */
+
+#if (BLUE_CORE != BLUENRG_LP)
 /**
 * @brief  Exits the device from connectable mode.
 * @param  None
@@ -2392,7 +2538,7 @@ void setNotConnectable(void)
 {
   aci_gap_set_non_discoverable();
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
 * @brief  Added BLE service
@@ -2404,7 +2550,7 @@ int32_t BleManagerAddChar(BleCharTypeDef *BleChar)
   int32_t retValue=0;
   
   if(BleChar != NULL) {
-    if(UsedBleChars<BLE_MANAGER_MAX_ALLOCABLE_CHARS) {
+    if(UsedBleChars<(uint8_t)BLE_MANAGER_MAX_ALLOCABLE_CHARS) {
       BleCharsArray[UsedBleChars] = BleChar;
       UsedBleChars++;
       retValue=1;
@@ -2414,7 +2560,7 @@ int32_t BleManagerAddChar(BleCharTypeDef *BleChar)
   return retValue;
 }
 
-#ifndef BLUE_WB
+#if (BLUE_CORE != BLUE_WB)
 /**
 * @brief  ResetBleManager
 * @param  None
@@ -2428,7 +2574,7 @@ void ResetBleManager(void)
   HAL_GPIO_WritePin(HCI_TL_RST_PORT, HCI_TL_RST_PIN, GPIO_PIN_SET);
   BLE_MANAGER_DELAY(300);
 }
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
 
 /**
 * @brief  ResetBleManagerCallbackFunctionPointer
@@ -2452,6 +2598,7 @@ static void ResetBleManagerCallbackFunctionPointer(void)
   CustomAttrModConfigCallback=NULL;
   CustomWriteRequestConfigCallback=NULL;
 
+#ifndef BLE_MANAGER_NO_PARSON
   /**************** Extended Configuration *************************/
   //For Reboot on DFU Command
   CustomExtConfigRebootOnDFUModeCommandCallback=NULL;
@@ -2493,6 +2640,7 @@ static void ResetBleManagerCallbackFunctionPointer(void)
   //For Sensor Configuration
   CustomExtConfigReadSensorsConfigCommandsCallback=NULL;
   CustomExtConfigSetSensorsConfigCommandsCallback=NULL;
+#endif /* BLE_MANAGER_NO_PARSON */
 }
 
 /**
@@ -2516,13 +2664,15 @@ tBleStatus InitBleManager(void)
   MaxBleCharStdOutLen = DEFAULT_MAX_STDOUT_CHAR_LEN;
   MaxBleCharStdErrLen = DEFAULT_MAX_STDERR_CHAR_LEN;
  
-#ifndef BLUE_WB
+#if (BLUE_CORE != BLUE_WB)
   /* BLE stack initialization */
   ret = InitBleManager_BLE_Stack();
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
   
   ResetBleManagerCallbackFunctionPointer();
+#ifndef BLE_MANAGER_NO_PARSON
   ClearCustomCommandsList();
+#endif /* BLE_MANAGER_NO_PARSON */
   
   if(ret==(tBleStatus)BLE_STATUS_SUCCESS) {
     /* Ble Manager services initialization */
@@ -2534,7 +2684,7 @@ tBleStatus InitBleManager(void)
   return ret;
 }
 
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
 /**
  * @brief  This function is called whenever there is an ACI event to be processed.
  * @note   Inside this function each event must be identified and correctly
@@ -2585,6 +2735,8 @@ void HCI_Event_CB(void *pckt)
           evt_le_connection_update_complete * con_update = (evt_le_connection_update_complete *) evt->data;
           #if (BLE_DEBUG_LEVEL>1)
             BLE_MANAGER_PRINTF("EVT_LE_CONN_UPDATE_COMPLETE status=%d\r\n",con_update->status);
+          #else
+            UNUSED(con_update);
           #endif
           break;
         }
@@ -2834,10 +2986,10 @@ fail:
   return ret;
 }
 
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
 
-#ifndef BLUENRG_LP
-#ifndef BLUE_WB
+#if (BLUE_CORE != BLUENRG_LP)
+#if (BLUE_CORE != BLUE_WB)
 /** @brief HCI Transport layer user function
 * @param void *pData pointer to HCI event data
 * @retval None
@@ -2876,9 +3028,9 @@ static void APP_UserEvtRx(void *pData)
     }
   }
 }
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
 
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 /**
  * @brief  Callback processing the ACI events
  * @note   Inside this function each event must be identified and correctly
@@ -2945,10 +3097,10 @@ static void APP_UserEvtRx(void *pData)
   }
 }
 
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 
-#ifndef BLUE_WB
+#if (BLUE_CORE != BLUE_WB)
 
 /** @brief Initialize the BLE Stack
 * @param None
@@ -2966,9 +3118,9 @@ static tBleStatus InitBleManager_BLE_Stack(void)
   /* Initialize the BlueNRG HCI */
   hci_init(APP_UserEvtRx, NULL);
   
-#ifdef BLUENRG_LP
+#if (BLUE_CORE == BLUENRG_LP)
   InitBLEIntForBlueNRGLP();
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE == BLUENRG_LP) */
   
   /* Sw reset of the device */
   hci_reset();
@@ -2989,7 +3141,7 @@ static tBleStatus InitBleManager_BLE_Stack(void)
   }
   
   /* Check Random MAC */
-  if ((BLE_StackValue.BleMacAddress[5] & 0xC0) != 0xC0) {
+  if ((BLE_StackValue.BleMacAddress[5] & 0xC0U) != 0xC0U) {
     BLE_MANAGER_PRINTF("\tStatic Random address not well formed\r\n");
     goto fail;
   }
@@ -3022,22 +3174,22 @@ static tBleStatus InitBleManager_BLE_Stack(void)
     goto fail;
   }
   
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   ret = aci_gatt_init();
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   ret = aci_gatt_srv_init();
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   if(ret != BLE_STATUS_SUCCESS){
     BLE_MANAGER_PRINTF("\r\nGATT_Init failed\r\n");
     goto fail;
   }
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   ret = aci_gap_init(BLE_StackValue.GAP_Roles, 0, (uint8_t) strlen(BLE_StackValue.BoardName), &service_handle, &dev_name_char_handle, &appearance_char_handle);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   ret = aci_gap_init(BLE_StackValue.GAP_Roles, 0x00, (uint8_t) strlen(BLE_StackValue.BoardName), STATIC_RANDOM_ADDR, &service_handle, &dev_name_char_handle,
                      &appearance_char_handle);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   
   
   if(ret != BLE_STATUS_SUCCESS){
@@ -3045,7 +3197,7 @@ static tBleStatus InitBleManager_BLE_Stack(void)
     goto fail;
   }
   
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   ret = aci_gatt_update_char_value(service_handle, dev_name_char_handle, 0,
                                    (uint8_t) strlen(BLE_StackValue.BoardName), (uint8_t *)BLE_StackValue.BoardName);
   
@@ -3053,7 +3205,7 @@ static tBleStatus InitBleManager_BLE_Stack(void)
     BLE_MANAGER_PRINTF("\r\naci_gatt_update_char_value failed\r\n");
     goto fail;
   }
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
     ret = aci_gatt_srv_write_handle_value_nwk(dev_name_char_handle + 1, 0,(uint8_t) strlen(BLE_StackValue.BoardName),(uint8_t*) BLE_StackValue.BoardName);
   if (ret != BLE_STATUS_SUCCESS) {
     BLE_MANAGER_PRINTF("\taci_gatt_srv_write_handle_value_nwk failed: 0x%02x\r\n", ret);
@@ -3061,7 +3213,7 @@ static tBleStatus InitBleManager_BLE_Stack(void)
   } else {
     BLE_MANAGER_PRINTF("\taci_gatt_srv_write_handle_value_nwk\r\n");
   }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   
   if(BLE_StackValue.EnableSecureConnection) {
     /* Set the I/O capability  Otherwise the Smartphone will propose a Pin
@@ -3081,11 +3233,11 @@ static tBleStatus InitBleManager_BLE_Stack(void)
                                                    16,
                                                    DONOT_USE_FIXED_PIN_FOR_PAIRING,
                                                    BLE_StackValue.SecurePIN
-                                                   #ifndef BLUENRG_LP
+                                                   #if (BLUE_CORE != BLUENRG_LP)
                                                      ,0x01);
-                                                   #else /* BLUENRG_LP */
+                                                   #else /* (BLUE_CORE != BLUENRG_LP) */
                                                      );
-                                                   #endif /* BLUENRG_LP*/
+                                                   #endif /* (BLUE_CORE != BLUENRG_LP)*/
     } else {
       ret = aci_gap_set_authentication_requirement(BLE_StackValue.AuthenticationRequirements,
                                                    BLE_StackValue.MITM_ProtectionRequirements,
@@ -3095,11 +3247,11 @@ static tBleStatus InitBleManager_BLE_Stack(void)
                                                    16,
                                                    USE_FIXED_PIN_FOR_PAIRING,
                                                    BLE_StackValue.SecurePIN
-                                                   #ifndef BLUENRG_LP
+                                                   #if (BLUE_CORE != BLUENRG_LP)
                                                      ,0x01);
-                                                   #else /* BLUENRG_LP */
+                                                   #else /* (BLUE_CORE != BLUENRG_LP) */
                                                      );
-                                                   #endif /* BLUENRG_LP*/
+                                                   #endif /* (BLUE_CORE != BLUENRG_LP)*/
     }
     
   } else {
@@ -3111,11 +3263,11 @@ static tBleStatus InitBleManager_BLE_Stack(void)
                                                  16,
                                                  USE_FIXED_PIN_FOR_PAIRING,
                                                  BLE_StackValue.SecurePIN
-                                                 #ifndef BLUENRG_LP
+                                                 #if (BLUE_CORE != BLUENRG_LP)
                                                    ,0x01);
-                                                 #else /* BLUENRG_LP */
+                                                 #else /* (BLUE_CORE != BLUENRG_LP) */
                                                    );
-                                                 #endif /* BLUENRG_LP*/
+                                                 #endif /* (BLUE_CORE != BLUENRG_LP)*/
   }
   
   if (ret != BLE_STATUS_SUCCESS) {
@@ -3134,39 +3286,39 @@ static tBleStatus InitBleManager_BLE_Stack(void)
                        BLE_StackValue.BleMacAddress[1],
                        BLE_StackValue.BleMacAddress[0]);
 
-#ifndef BLUENRG_LP
-  BLE_MANAGER_PRINTF("\t\tBlueNRG-2 HW ver%d.%d\r\n", ((hwVersion>>4)&0x0F), (hwVersion&0x0F));
-  BLE_MANAGER_PRINTF("\t\tBlueNRG-2 FW ver%d.%d.%c\r\n\r\n", (fwVersion>>8)&0xF, (fwVersion>>4)&0xF, ('a' + (fwVersion&0xF)));
-#else /* BLUENRG_LP */
+#if (BLUE_CORE != BLUENRG_LP)
+  BLE_MANAGER_PRINTF("\t\tBlueNRG-2 HW ver%d.%d\r\n", ((hwVersion>>4)&0x0FU), (hwVersion&0x0FU));
+  BLE_MANAGER_PRINTF("\t\tBlueNRG-2 FW ver%d.%d.%c\r\n\r\n", (fwVersion>>8)&0xFU, (fwVersion>>4)&0xFU, ('a' + (fwVersion&0xFU)));
+#else /* (BLUE_CORE != BLUENRG_LP) */
   BLE_MANAGER_PRINTF("BlueNRG-LP HWver %d FWver %d\r\n", hwVersion, fwVersion);
-#endif /* BLUENRG_LP*/
+#endif /* (BLUE_CORE != BLUENRG_LP)*/
   
   if(BLE_StackValue.EnableSecureConnection) {
     BLE_MANAGER_PRINTF("\t-->ONLY SECURE CONNECTION<--\r\n");
     
     if(BLE_StackValue.EnableRandomSecurePIN) {
-      BLE_MANAGER_PRINTF("\t\tRandom Key = %ld\r\n",BLE_StackValue.SecurePIN);
+      BLE_MANAGER_PRINTF("\t\tRandom Key = %lu\r\n",BLE_StackValue.SecurePIN);
     } else {
-      BLE_MANAGER_PRINTF("\t\tFixed  Key = %ld\r\n",BLE_StackValue.SecurePIN);
+      BLE_MANAGER_PRINTF("\t\tFixed  Key = %lu\r\n",BLE_StackValue.SecurePIN);
     }
   }
   
   /* Set output power level */
   aci_hal_set_tx_power_level(BLE_StackValue.EnableHighPowerMode,
                              BLE_StackValue.PowerAmplifierOutputLevel);
-#ifdef BLUENRG_LP
+#if (BLUE_CORE == BLUENRG_LP)
   ret = hci_le_write_suggested_default_data_length(247,(247+14)*8); 
   if (ret != BLE_STATUS_SUCCESS) {
     BLE_MANAGER_PRINTF("\thci_le_write_suggested_default_data_length failed: 0x%02x\r\n", ret);
   } else {
     BLE_MANAGER_PRINTF("\thci_le_write_suggested_default_data_length\r\n");
   }
-#endif /*BLUENRG_LP */
+#endif /*(BLUE_CORE == BLUENRG_LP) */
   
 fail:
   return ret;
 }
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
 
 /**
  * @brief  Get hardware and firmware version
@@ -3185,14 +3337,14 @@ uint8_t getBlueNRGVersion(uint8_t *hwVersion, uint16_t *fwVersion)
                                               &manufacturer_name, &lmp_pal_subversion);
 
   if (status == BLE_STATUS_SUCCESS) {
-    *hwVersion = hci_revision >> 8;
-    *fwVersion = (hci_revision & 0xFF) << 8;              // Major Version Number
-    *fwVersion |= ((lmp_pal_subversion >> 4) & 0xF) << 4; // Minor Version Number
-    *fwVersion |= lmp_pal_subversion & 0xF;               // Patch Version Number
+    *hwVersion = (uint8_t)(hci_revision >> 8);
+    *fwVersion = (hci_revision & 0xFFU) << 8;              // Major Version Number
+    *fwVersion |= ((lmp_pal_subversion >> 4) & 0xFU) << 4; // Minor Version Number
+    *fwVersion |= lmp_pal_subversion & 0xFU;               // Patch Version Number
   }
   return status;
 }
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
 
 /**
 * @brief  Init Ble Manager Services
@@ -3204,8 +3356,10 @@ static tBleStatus InitBleManagerServices(void)
   tBleStatus Status = BLE_ERROR_UNSPECIFIED;
   BleCharTypeDef *BleCharPointer;
   
+#ifndef BLE_MANAGER_NO_PARSON
   //Set the Malloc/Free Functions  used inside the Json Parser
   json_set_allocation_functions(BLE_MallocFunction, BLE_FreeFunction);
+#endif /* BLE_MANAGER_NO_PARSON */
   
 #ifdef BLE_MANAGER_SDKV2
    BLE_MANAGER_PRINTF("BlueST-SDK V2\r\n");
@@ -3276,6 +3430,7 @@ static tBleStatus InitBleManagerServices(void)
   
   UsedStandardBleChars = UsedBleChars;
   
+#ifndef BLE_MANAGER_NO_PARSON
   /* Extended Configuration characteristic value */
   if(BLE_StackValue.EnableExtConfig)
   {
@@ -3293,6 +3448,7 @@ static tBleStatus InitBleManagerServices(void)
     BleCharPointer->Is_Variable=1;
     BleManagerAddChar(BleCharPointer);
   }
+#endif /* BLE_MANAGER_NO_PARSON */
   
   /* Set Custom Configuration and Services */
   BLE_InitCustomService();
@@ -3310,6 +3466,7 @@ static tBleStatus InitBleManagerServices(void)
   return Status;
 }
 
+#ifndef BLE_MANAGER_NO_PARSON
 /**
 * @brief  This function is called to parse a BLE_COMM_TP packet.
 * @param  buffer_out: pointer to the output buffer.
@@ -3485,6 +3642,7 @@ uint32_t BLE_Command_TP_Encapsulate(uint8_t* buffer_out, uint8_t* buffer_in, uin
   }
   return tot_size;
 }
+#endif /* BLE_MANAGER_NO_PARSON */
 
 /* ***************** BlueNRG-1 Stack Callbacks ********************************/
 
@@ -3509,7 +3667,7 @@ void hci_le_connection_complete_event(uint8_t Status,
   
   BLE_MANAGER_PRINTF(">>>>>>CONNECTED %x:%x:%x:%x:%x:%x\r\n",Peer_Address[5],Peer_Address[4],Peer_Address[3],Peer_Address[2],Peer_Address[1],Peer_Address[0]);
 
-#ifndef BLUENRG_MS
+#if (BLUE_CORE != BLUENRG_MS)
   if(BLE_StackValue.EnableSecureConnection) {
     tBleStatus RetStatus;
     /* Check if the device is already bonded */
@@ -3530,23 +3688,23 @@ void hci_le_connection_complete_event(uint8_t Status,
 #endif
     }
   }
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE != BLUENRG_MS) */
   
   /* Start one Exchange configuration for understaning the maxium ATT_MTU */
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   aci_gatt_exchange_config(connection_handle);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   aci_gatt_clt_exchange_config(Connection_Handle);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   
   if(CustomConnectionCompleted!=NULL){
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
     CustomConnectionCompleted(connection_handle,Peer_Address);
-#elif defined BLUE_WB
+#elif (BLUE_CORE == BLUE_WB)
     CustomConnectionCompleted(connection_handle);
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
   CustomConnectionCompleted(connection_handle, Peer_Address_Type,Peer_Address);
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
   }
   
 }/* end hci_le_connection_complete_event() */
@@ -3576,7 +3734,7 @@ void hci_disconnection_complete_event(uint8_t Status,
   
 }/* end hci_disconnection_complete_event() */
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 /*******************************************************************************
 * Function Name  : aci_gatt_read_permit_req_event.
 * Description    : This event is given when a read request is received
@@ -3604,7 +3762,7 @@ void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
   if(connection_handle != 0U)
     aci_gatt_allow_read(connection_handle);
 }
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 void aci_gatt_srv_authorize_nwk_event(uint16_t Connection_Handle,
                                                     uint16_t Attr_Handle,
                                                     uint8_t Operation_Type,
@@ -3627,7 +3785,7 @@ void aci_gatt_srv_authorize_nwk_event(uint16_t Connection_Handle,
     }
   }
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /*******************************************************************************
 * Function Name  : aci_gatt_attribute_modified_event.
@@ -3657,11 +3815,11 @@ void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,
       STORE_LE_16(buff  ,0x0001U);
       STORE_LE_16(buff+2,0xFFFFU);
       
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
       ret = aci_gatt_update_char_value(0x0001,0x0002,0,4,buff);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
        ret = aci_gatt_srv_notify(Connection_Handle, 0x0002 + 1, GATT_INDICATION, 4, buff);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
       
       if (ret == (tBleStatus)BLE_STATUS_SUCCESS){
         BLE_MANAGER_PRINTF("\r\nUUID Rescan Forced\r\n");
@@ -3702,7 +3860,7 @@ void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,
   }
 }
 
-#ifdef BLUENRG_LP
+#if (BLUE_CORE == BLUENRG_LP)
 /**
 * @brief  This event indicates that a new connection has been created
 *
@@ -3750,7 +3908,7 @@ void aci_gatt_srv_attribute_modified_event(uint16_t Connection_Handle,
                                        Attr_Data_Length,
                                        Attr_Data);
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE == BLUENRG_LP) */
 
 /*******************************************************************************
 * Function Name  : aci_att_exchange_mtu_resp_event
@@ -3830,9 +3988,9 @@ void aci_gap_pairing_complete_event(uint16_t ConnectionHandle, uint8_t status, u
   switch(status) {
     case 0x00: //Success
       BLE_MANAGER_PRINTF("aci_gap_pairing_complete_event %s\r\n", StatusString[status]);
-#ifndef BLUENRG_MS
+#if (BLUE_CORE != BLUENRG_MS)
       UpdateWhiteList();
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE != BLUENRG_MS) */
       BLE_MANAGER_DELAY(100);
       break;
     case 0x02: //Pairing Failed
@@ -3860,6 +4018,7 @@ void aci_gap_pairing_complete_event(uint16_t ConnectionHandle, uint8_t status, u
       BLE_MANAGER_PRINTF("aci_gap_pairing_complete_event failed:\r\n\tstatus= %s\r\n\treason= %s\r\n",
                 StatusString[status],
                 ReasonString[reason]);
+      break;
   }
   
   UNUSED(StatusString);
@@ -3870,7 +4029,7 @@ void aci_gap_pairing_complete_event(uint16_t ConnectionHandle, uint8_t status, u
   }
 }
 
-#ifndef BLUENRG_MS
+#if (BLUE_CORE != BLUENRG_MS)
 /*******************************************************************************
 * Function Name  : aci_l2cap_connection_update_resp_event
 * Description    : This event is generated when the master responds to the connection
@@ -3944,27 +4103,25 @@ void hci_le_data_length_change_event(uint16_t Connection_Handle,
                                      uint16_t MaxRxOctets,
                                      uint16_t MaxRxTime)
 {
+#if (BLUE_CORE == BLUENRG_LP)
   tBleStatus RetStatus;
+#endif /* (BLUE_CORE == BLUENRG_LP) */
 #if (BLE_DEBUG_LEVEL>2)
   BLE_MANAGER_PRINTF("hci_le_data_length_change_event\r\n");
 #endif
   
-#ifndef BLUENRG_LP
-  RetStatus = aci_gatt_exchange_config(Connection_Handle);
-#else /* BLUENRG_LP */
+#if (BLUE_CORE == BLUENRG_LP)
   BLE_MANAGER_DELAY(200);
   RetStatus = aci_gatt_clt_exchange_config(Connection_Handle);
-#endif /* BLUENRG_LP */
   if( RetStatus !=BLE_STATUS_SUCCESS) {
     BLE_MANAGER_PRINTF("Error: ACI GATT Exchange Config Failed (0x%x)\r\n", RetStatus);
-#if (BLE_DEBUG_LEVEL>2)
   } else {
     BLE_MANAGER_PRINTF("ACI GATT Exchange Config Done\r\n");
-#endif
   }
+#endif /* (BLUE_CORE == BLUENRG_LP) */
 }
 
-#ifdef BLUENRG_LP
+#if (BLUE_CORE == BLUENRG_LP)
 /**
  * @brief This event is generated when a GATT client procedure completes either
  *        with error or successfully.
@@ -4109,9 +4266,9 @@ void hci_le_phy_update_complete_event(uint8_t Status,
   BLE_MANAGER_PRINTF("\tTX_PHY=0x%x\r\n",TX_PHY);
   BLE_MANAGER_PRINTF("\tRX_PHY=0x%x\r\n",RX_PHY);
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE == BLUENRG_LP) */
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 /**
 * @brief This event is generated when an indication is received from the server.
 * @param Connection_Handle Connection handle related to the response
@@ -4164,7 +4321,7 @@ void aci_gatt_indication_event(uint16_t Connection_Handle,
   }
 }
 
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
 /**
 * @brief This event is generated when an indication is received from the server.
 * @param Connection_Handle Connection handle related to the response
@@ -4216,7 +4373,7 @@ void aci_gatt_clt_indication_event(uint16_t Connection_Handle,
 #endif
   }
 }
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 
 /**
   * @brief This event is generated by the client/server to the application on a GATT timeout (30
@@ -4264,14 +4421,33 @@ void hci_hardware_error_event(uint8_t Hardware_Code)
   }
   else
   {
+#if (BLE_DEBUG_LEVEL>2)
+#if 0
     char *HWCodeString[] = {
       /* 0x00 */ "NaN", 
       /* 0x01 */ "Radio state error",
       /* 0x02 */ "Timer overrun error",
       /* 0x03 */ "Internal queue overflow error"
     };
-    
     BLE_MANAGER_PRINTF("\r\n-------->hci_hardware_error_event Hardware_Code=\r\n\t%s<--------\r\n",HWCodeString[Hardware_Code]);
+#else
+    switch(Hardware_Code)
+    {
+    case 0:
+      BLE_MANAGER_PRINTF("\r\n-------->hci_hardware_error_event Hardware_Code=\r\n\tNaN<--------\r\n");
+      break;
+    case 1:
+      BLE_MANAGER_PRINTF("\r\n-------->hci_hardware_error_event Hardware_Code=\r\n\tRadio state error<--------\r\n");
+      break;
+    case 2:
+      BLE_MANAGER_PRINTF("\r\n-------->hci_hardware_error_event Hardware_Code=\r\n\tTimer overrun error<--------\r\n");
+      break;
+    case 3:
+      BLE_MANAGER_PRINTF("\r\n-------->hci_hardware_error_event Hardware_Code=\r\n\tInternal queue overflow error<--------\r\n");
+      break;
+    }
+#endif
+#endif
     BLE_MANAGER_DELAY(1000);
     HAL_NVIC_SystemReset();
   }
@@ -4303,11 +4479,11 @@ static void UpdateWhiteList(void)
   uint8_t NumOfAddresses; 
   Bonded_Device_Entry_t BondedDeviceEntry[BLE_MANAGER_MAX_BONDED_DEVICES];
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   RetStatus =  aci_gap_get_bonded_devices(&NumOfAddresses, BondedDeviceEntry);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   RetStatus =  aci_gap_get_bonded_devices(0,BLE_MANAGER_MAX_BONDED_DEVICES,&NumOfAddresses, BondedDeviceEntry);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   
   if (RetStatus == BLE_STATUS_SUCCESS) {
     if (NumOfAddresses > 0U) {
@@ -4315,11 +4491,11 @@ static void UpdateWhiteList(void)
       BLE_MANAGER_PRINTF("Bonded with %d Device(s): \r\n", NumOfAddresses);
 #endif
 
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
       RetStatus = aci_gap_configure_whitelist();
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
       RetStatus = aci_gap_configure_white_and_resolving_list(0x01 /* White List */);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
       if (RetStatus != BLE_STATUS_SUCCESS) {
         BLE_MANAGER_PRINTF("Error: aci_gap_configure_whitelist() failed:0x%02x\r\n", RetStatus);
 #if (BLE_DEBUG_LEVEL>2)
@@ -4363,5 +4539,5 @@ void hci_encryption_change_event(uint8_t Status,uint16_t Connection_Handle,uint8
   BLE_MANAGER_PRINTF("hci_encryption_change_event\r\n");  
 #endif
 }
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE != BLUENRG_MS) */
 

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_Manager.h 
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   BLE Manager services APIs
   ******************************************************************************
   * @attention
@@ -28,11 +28,20 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdlib.h>
-#include "parson.h"
 
 #include "BLE_Manager_Conf.h"
+   
+#ifndef BLE_MANAGER_NO_PARSON
+  #include "parson.h"
+#endif /* BLE_MANAGER_NO_PARSON */
+   
+/* Bleutooth core supported */
+#define BLUENRG_1_2     0x00
+#define BLUENRG_MS      0x01
+#define BLUENRG_LP      0x02
+#define BLUE_WB         0x03
 
-#if defined BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   #include "hci.h"
   #include "hci_tl.h"
   #include "hci_le.h"
@@ -47,7 +56,7 @@
   #include "bluenrg_utils.h"
   #include "bluenrg_l2cap_aci.h"
   #include "sm.h"
-#elif defined BLUENRG_LP
+#elif (BLUE_CORE == BLUENRG_LP)
   #include "bluenrg_lp_aci.h"
   #include "bluenrg_lp_hci_le.h"
   #include "bluenrg_lp_events.h"
@@ -55,35 +64,35 @@
   #include "hci_tl.h"
   #include "hci.h"
   #include "bluenrg_utils.h"
-#elif defined BLUE_WB
+#elif (BLUE_CORE == BLUE_WB)
   #include "ble.h"
   #include "ble_hal_aci.h"
   #include "ble_gatt_aci.h"
   #include "ble_gap_aci.h"
   #include "ble_hci_le.h"
   #include "ble_l2cap_aci.h"
-#else /* BLUENRG_MS */
+#else /* BLUENRG_1_2 */
   #include "hci.h"
   #include "bluenrg1_hal_aci.h"
   #include "bluenrg1_gatt_aci.h"
   #include "bluenrg1_gap_aci.h"
   #include "bluenrg1_hci_le.h"
   #include "bluenrg1_l2cap_aci.h"
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
 
 /* Exported Defines ----------------------------------------------------------*/
  
 /* BLE Manager Version only numbers 0->9 */
-#define BLE_MANAGER_VERSION_MAJOR '0'
-#define BLE_MANAGER_VERSION_MINOR '3'
+#define BLE_MANAGER_VERSION_MAJOR '1'
+#define BLE_MANAGER_VERSION_MINOR '0'
 #define BLE_MANAGER_VERSION_PATCH '0'
    
 /* Length of AdvData in octets */
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   #define BLE_MANAGER_ADVERTISE_DATA_LENGHT 25
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   #define BLE_MANAGER_ADVERTISE_DATA_LENGHT 28
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
    
 /* SDK value for used platform */
 #define BLE_MANAGER_STEVAL_WESU1_PLATFORM        0x01U
@@ -96,8 +105,10 @@
 #define BLE_MANAGER_STEVAL_STWINKT1_PLATFORM     0x08U
 #define BLE_MANAGER_STEVAL_STWINKT1B_PLATFORM    0x09U
 #define BLE_MANAGER_STEVAL_STWINBX1_PLATFORM     0x0EU
-#define BLE_MANAGER_SENSOR_TILE_BOX_PRO_PLATFORM 0x0DU
 #define BLE_MANAGER_STEVAL_ASTRA1_PLATFORM       0x0CU
+#define BLE_MANAGER_SENSOR_TILE_BOX_PRO_PLATFORM 0x0DU
+#define BLE_MANAGER_STEVAL_PROTEUS1_PLATFORM     0x0FU
+#define BLE_MANAGER_STSYS_SBU06_PLATFORM         0x10U
 #define BLE_MANAGER_NUCLEO_PLATFORM              0x80U
 #define BLE_MANAGER_STM32F446RE_NUCLEO_PLATFORM  0x7CU
 #define BLE_MANAGER_STM32L053R8_NUCLEO_PLATFORM  0x7DU
@@ -106,20 +117,21 @@
 #define BLE_MANAGER_UNDEF_PLATFORM               0xFFU
    
 #define BLE_MANAGER_CUSTOM_COMMAND_VALUE_NAN 0xDEADBEEF
-#define BLE_MANAGER_CUSTOM_COMMAND_MAX_LEGHT 32U
+   
+#define BLE_MANAGER_READ_CUSTOM_COMMAND "ReadCustomCommand"
    
 #ifdef BLE_MANAGER_SDKV2
-  #ifndef BLUENRG_LP
+  #if (BLUE_CORE != BLUENRG_LP)
     #define BLE_MANAGER_CUSTOM_FIELD1 15
     #define BLE_MANAGER_CUSTOM_FIELD2 16
     #define BLE_MANAGER_CUSTOM_FIELD3 17
     #define BLE_MANAGER_CUSTOM_FIELD4 18
-  #else /* BLUENRG_LP */
+  #else /* (BLUE_CORE != BLUENRG_LP) */
     #define BLE_MANAGER_CUSTOM_FIELD1 18
     #define BLE_MANAGER_CUSTOM_FIELD2 19
     #define BLE_MANAGER_CUSTOM_FIELD3 20
     #define BLE_MANAGER_CUSTOM_FIELD4 21
-  #endif /* BLUENRG_LP */
+  #endif /* (BLUE_CORE != BLUENRG_LP) */
 #endif /* BLE_MANAGER_SDKV2 */
    
 #define COM_TYPE_ACC    1
@@ -151,16 +163,21 @@
 #define COM_LIST_SEPARATOR_INT -2
 #define COM_LIST_SEPARATOR_FLOAT -2.0f
    
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   #define BLE_ERROR_UNSPECIFIED         ERR_UNSPECIFIED_ERROR
   #define hci_le_set_scan_response_data hci_le_set_scan_resp_data
   #define aci_gatt_exchange_config      aci_gatt_exchange_configuration
   #define aci_gap_pass_key_resp         aci_gap_pass_key_response
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
    
-#ifdef BLUE_WB
+#if (BLUE_CORE == BLUE_WB)
   #define BLE_ERROR_UNSPECIFIED ERR_UNSPECIFIED_ERROR
-#endif /* BLUE_WB */
+#endif /* (BLUE_CORE == BLUE_WB) */
+
+/* Exported Macros -----------------------------------------------------------*/
+#ifndef MIN
+#define MIN(a,b)            ((a) < (b) )? (a) : (b)
+#endif
    
 /* Exported Types ------------------------------------------------------------*/
    
@@ -173,13 +190,13 @@ typedef struct
   uint8_t IO_capabilities;
   uint8_t AuthenticationRequirements;
   uint8_t MITM_ProtectionRequirements;
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   uint8_t Out_Of_Band_EnableData;
   uint8_t *oob_data;
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
   uint8_t SecureConnectionSupportOptionCode;
   uint8_t SecureConnectionKeypressNotification;
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
   
   /* To set the TX power level of the bluetooth device */
   /* ----------------------
@@ -194,7 +211,9 @@ typedef struct
   /* BLE Manager services setting */
   uint8_t EnableConfig;
   uint8_t EnableConsole;
+#ifndef BLE_MANAGER_NO_PARSON
   uint8_t EnableExtConfig;
+#endif /* BLE_MANAGER_NO_PARSON */
   
   /* BLE Board Name */
   char BoardName[8];
@@ -207,9 +226,9 @@ typedef struct
   
   /* For creating a Random Connection PIN */
   uint8_t EnableRandomSecurePIN;
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   uint8_t AdvertisingFilter;
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   
   /* Set to 1 for forcing a full BLE rescan for the Android/iOS "ST BLE Sensor" application */
   /* with the Secure connection it should not necessary because it will be managed directly by BLE Chip */
@@ -232,11 +251,11 @@ typedef struct
   // BLE Char Definition
   uint8_t uuid[16];
   uint8_t Char_UUID_Type;
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   uint8_t Char_Value_Length;
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
   uint16_t Char_Value_Length;
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
   uint8_t Char_Properties;
   uint8_t Security_Permissions;
   uint8_t GATT_Evt_Mask;
@@ -252,9 +271,9 @@ typedef struct
   // Attribute Modify
   void (*AttrMod_Request_CB)(void *BleCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
   // Read Request
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
   void (*Read_Request_CB)(void *BleCharPointer,uint16_t handle);
-#else /* BLUENRG_LP */
+#else /* (BLUE_CORE != BLUENRG_LP) */
   void (*Read_Request_CB)(void *BleCharPointer,
                          uint16_t handle,
                          uint16_t Connection_Handle,
@@ -262,7 +281,7 @@ typedef struct
                          uint16_t Attr_Val_Offset,
                          uint8_t Data_Length,
                          uint8_t Data[]);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
   // Write Request
   void (*Write_Request_CB)(void *BleCharPointer,uint16_t attr_handle, uint16_t Offset, uint8_t data_length, uint8_t *att_data);
 } BleCharTypeDef;
@@ -296,6 +315,13 @@ typedef enum {
   BLE_CUSTOM_COMMAND_ENUM_INTEGER,
   BLE_CUSTOM_COMMAND_ENUM_STRING
 } BLE_CustomCommandTypes_t;
+
+//Structure for saving the Custom Commands
+typedef struct {
+  char *CommandName;
+  BLE_CustomCommandTypes_t CommandType;
+  void *NextCommand;
+} BLE_ExtCustomCommand_t;
 
 //Typedef for Custom Commad
 typedef struct
@@ -388,6 +414,12 @@ extern BLE_StackTypeDef BLE_StackValue;
 /* Manufacter Advertise data */
 extern uint8_t manuf_data[BLE_MANAGER_ADVERTISE_DATA_LENGHT];
 
+extern uint8_t MaxBleCharStdOutLen;
+extern uint8_t MaxBleCharStdErrLen;
+
+extern BLE_ExtCustomCommand_t *ExtConfigCustomCommands;
+extern BLE_ExtCustomCommand_t *ExtConfigLastCustomCommand;
+
 /* Exported Function prototypes --------------------------------------------- */
 
 /**************** Bluetooth Comunication *************************/
@@ -396,18 +428,18 @@ extern CustomPairingCompleted_t CustomPairingCompleted;
 
 typedef void (*CustomSetConnectable_t)(uint8_t *ManufData);
 extern CustomSetConnectable_t CustomSetConnectable;
-#ifdef BLUENRG_MS
+#if (BLUE_CORE == BLUENRG_MS)
   typedef void (*CustomConnectionCompleted_t)(uint16_t ConnectionHandle, uint8_t addr[6]);
-#elif defined BLUE_WB
+#elif (BLUE_CORE == BLUE_WB)
   typedef void (*CustomConnectionCompleted_t)(uint16_t ConnectionHandle);
-#else /* BLUENRG_MS */
+#else /* (BLUE_CORE == BLUENRG_MS) */
   typedef void (*CustomConnectionCompleted_t)(uint16_t ConnectionHandle, uint8_t Address_Type, uint8_t addr[6]);
-#endif /* BLUENRG_MS */
+#endif /* (BLUE_CORE == BLUENRG_MS) */
 extern CustomConnectionCompleted_t CustomConnectionCompleted;
 
-#ifdef BLUENRG_LP
+#if (BLUE_CORE == BLUENRG_LP)
 extern void InitBLEIntForBlueNRGLP(void);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE == BLUENRG_LP) */
 
 typedef void (*CustomDisconnectionCompleted_t)(void);
 extern CustomDisconnectionCompleted_t CustomDisconnectionCompleted;
@@ -429,6 +461,7 @@ extern CustomAttrModConfig_t CustomAttrModConfigCallback;
 typedef void (*CustomWriteRequestConfig_t)(uint8_t * att_data, uint8_t data_length);
 extern CustomWriteRequestConfig_t CustomWriteRequestConfigCallback;
 
+#ifndef BLE_MANAGER_NO_PARSON
 /*********** Extended Configuration Char ****************/
 //For Reboot on DFU Command
 typedef void (*CustomExtConfigRebootOnDFUModeCommand_t)(void);
@@ -511,9 +544,10 @@ extern CustomExtConfigReadSensorsConfigCommands_t CustomExtConfigReadSensorsConf
 
 typedef void (*CustomExtConfigSetSensorsConfigCommands_t)(uint8_t *Answer);
 extern CustomExtConfigSetSensorsConfigCommands_t CustomExtConfigSetSensorsConfigCommandsCallback;
+#endif /* BLE_MANAGER_NO_PARSON */
 
 /* Exported functions ------------------------------------------------------- */
-#ifdef BLUE_WB
+#if (BLUE_CORE == BLUE_WB)
   #define hci_le_connection_complete_event  hci_le_connection_complete_event_BLE
   #define aci_gatt_attribute_modified_event aci_gatt_attribute_modified_event_BLE
   #define aci_gatt_indication_event         aci_gatt_indication_event_BLE
@@ -539,7 +573,7 @@ extern void aci_gatt_indication_event(uint16_t Connection_Handle,
                                           uint8_t Attribute_Value_Length,
                                           uint8_t Attribute_Value[]);
 
-#endif /* BLUE_WB */
+#endif /* (BLUE_CORE == BLUE_WB) */
 
 extern tBleStatus Stderr_Update(uint8_t *data,uint8_t length);
 extern tBleStatus Term_Update(uint8_t *data,uint8_t length);
@@ -547,14 +581,14 @@ extern tBleStatus Config_Update(uint32_t Feature,uint8_t Command,uint8_t data);
 extern tBleStatus Config_Update_32(uint32_t Feature,uint8_t Command,uint32_t data);
 extern void       setConnectable(void);
 extern void updateAdvData(void);
-#ifndef BLUENRG_LP
+#if (BLUE_CORE != BLUENRG_LP)
 extern void       setNotConnectable(void);
-#endif /* BLUENRG_LP */
+#endif /* (BLUE_CORE != BLUENRG_LP) */
 extern void       setConnectionParameters(int min , int max, int latency , int timeout );
 
-#ifndef BLUE_WB
+#if (BLUE_CORE != BLUE_WB)
 extern void ResetBleManager(void);
-#endif //BLUE_WB
+#endif /* (BLUE_CORE != BLUE_WB) */
 
 extern tBleStatus InitBleManager(void);
 extern int32_t BleManagerAddChar( BleCharTypeDef *BleChar);
@@ -562,15 +596,25 @@ extern int32_t BleManagerAddChar( BleCharTypeDef *BleChar);
 extern tBleStatus aci_gatt_update_char_value_wrapper(BleCharTypeDef *BleCharPointer,uint8_t charValOffset,uint8_t charValueLen, uint8_t *charValue);
 extern tBleStatus safe_aci_gatt_update_char_value   (BleCharTypeDef *BleCharPointer, uint8_t charValOffset, uint8_t charValueLen, uint8_t *charValue);
 
-extern uint8_t AddCustomCommand(char *CommandName,BLE_CustomCommandTypes_t CommandType, 
-                         int32_t Min, int32_t Max, int32_t *ValidValuesInt,char **ValidValuesString,char *ShortDesc,JSON_Array *JSON_SensorArray);
-extern void ClearCustomCommandsList(void);
+#ifndef BLE_MANAGER_NO_PARSON
+//Add a Custom Command to a Generic Feature
+extern uint8_t GenericAddCustomCommand(BLE_ExtCustomCommand_t **CustomCommands, BLE_ExtCustomCommand_t **LastCustomCommand,
+                                char *CommandName,BLE_CustomCommandTypes_t CommandType, int32_t DefaultValue,
+                                int32_t Min, int32_t Max, int32_t *ValidValuesInt,char **ValidValuesString,char *ShortDesc,JSON_Array *JSON_SensorArray);
+//Little specialization for Ext configuration
+#define AddCustomCommand(...) GenericAddCustomCommand(&ExtConfigCustomCommands, &ExtConfigLastCustomCommand, __VA_ARGS__)
+
+//Clear the Custom Commands List for a Generic Feature
+extern void GenericClearCustomCommandsList(BLE_ExtCustomCommand_t **CustomCommands, BLE_ExtCustomCommand_t **LastCustomCommand);
+//Little specialization for Ext configuration
+#define ClearCustomCommandsList() GenericClearCustomCommandsList(&ExtConfigCustomCommands, &ExtConfigLastCustomCommand)
 
 extern void create_JSON_Sensor(COM_Sensor_t *sensor, JSON_Value *tempJSON);
 
 extern void SendNewCustomCommandList(void);
 extern void SendError(char *message);
 extern void SendInfo(char *message);
+#endif /* BLE_MANAGER_NO_PARSON */
 
 extern uint8_t getBlueNRGVersion(uint8_t *hwVersion, uint16_t *fwVersion);
 
@@ -582,6 +626,7 @@ extern uint8_t getBlueNRGVersion(uint8_t *hwVersion, uint16_t *fwVersion);
  */
 extern tBleStatus BLE_StdOutSendBuffer(uint8_t* buffer, uint8_t len);
 
+#ifndef BLE_MANAGER_NO_PARSON
 /**
   * @brief  This function is called to parse a BLE_COMM_TP packet.
   * @param  buffer_out: pointer to the output buffer.
@@ -589,7 +634,7 @@ extern tBleStatus BLE_StdOutSendBuffer(uint8_t* buffer, uint8_t len);
   * @param  len: buffer in length
   * @retval Buffer out length.
   */
-uint32_t BLE_Command_TP_Parse(uint8_t** buffer_out, uint8_t* buffer_in, uint32_t len);
+extern uint32_t BLE_Command_TP_Parse(uint8_t** buffer_out, uint8_t* buffer_in, uint32_t len);
 
 /**
   * @brief  This function is called to prepare a BLE_COMM_TP packet.
@@ -598,15 +643,19 @@ uint32_t BLE_Command_TP_Parse(uint8_t** buffer_out, uint8_t* buffer_in, uint32_t
   * @param  len: buffer in length
   * @retval Buffer out length.
   */
-uint32_t BLE_Command_TP_Encapsulate(uint8_t* buffer_out, uint8_t* buffer_in, uint32_t len);
+extern uint32_t BLE_Command_TP_Encapsulate(uint8_t* buffer_out, uint8_t* buffer_in, uint32_t len);
 
-tBleStatus BLE_ExtConfiguration_Update(uint8_t *data,uint32_t length);
+extern tBleStatus BLE_ExtConfiguration_Update(uint8_t *data,uint32_t length);
+    
+extern BLE_CustomCommadResult_t *ParseCustomCommand(BLE_ExtCustomCommand_t *LocCustomCommands,uint8_t *hs_command_buffer);
+extern BLE_CustomCommadResult_t * AskGenericCustomCommands(uint8_t *hs_command_buffer);
+#endif /* BLE_MANAGER_NO_PARSON */
 
-#ifdef ACC_BLE_CONGESTION
+#ifdef ACC_BLUENRG_CONGESTION
   #define ACI_GATT_UPDATE_CHAR_VALUE safe_aci_gatt_update_char_value
-#else /* ACC_BLE_CONGESTION */
+#else /* ACC_BLUENRG_CONGESTION */
   #define ACI_GATT_UPDATE_CHAR_VALUE aci_gatt_update_char_value_wrapper
-#endif /* ACC_BLE_CONGESTION */
+#endif /* ACC_BLUENRG_CONGESTION */
 #ifdef __cplusplus
 }
 #endif

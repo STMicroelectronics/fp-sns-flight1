@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    BLE_FFT_Amplitude.c
   * @author  System Research & Applications Team - Agrate/Catania Lab.
-  * @version 1.2.0
-  * @date    28-Feb-2022
+  * @version 1.8.0
+  * @date    02-December-2022
   * @brief   Add BLE FFT amplitude info services using vendor specific profiles.
   ******************************************************************************
   * @attention
@@ -111,7 +111,7 @@ tBleStatus BLE_FFTAmplitudeUpdate(uint8_t *DataToSend, uint16_t DataNumber, uint
   
   ret = ACI_GATT_UPDATE_CHAR_VALUE(&BleCharFFTAmplitude, 0, NumByteSent,Buff);
   
-  if (ret == BLE_STATUS_SUCCESS)
+  if (ret == (tBleStatus)BLE_STATUS_SUCCESS)
   {
     (*CountSendData)++;
       

@@ -64,11 +64,11 @@ BLE, BLE_Manager, BlueNRG-2, SPI, I2C, UART, ToF
   - This example has been tested with STMicroelectronics:
     - NUCLEO-F401RE RevC board
 	
-ADDITIONAL_BOARD : [X-NUCLEO-BNRG2A1](https://www.st.com/en/ecosystems/x-nucleo-bnrg2a1.html)
+ADDITIONAL_BOARD : X-NUCLEO-BNRG2A1 https://www.st.com/en/ecosystems/x-nucleo-bnrg2a1.html
 
-ADDITIONAL_BOARD : [X-NUCLEO-53L3A2](https://www.st.com/en/ecosystems/x-nucleo-53l3a2.html)
+ADDITIONAL_BOARD : X-NUCLEO-53L3A2 https://www.st.com/en/ecosystems/x-nucleo-53l3a2.html
 
-ADDITIONAL_COMP : [BlueNRG-M2SP](https://www.st.com/en/wireless-connectivity/bluenrg-2.html)
+ADDITIONAL_COMP : BlueNRG-M2SP https://www.st.com/en/wireless-connectivity/bluenrg-2.html
 
 ### <b>Known Limitations</b>
 

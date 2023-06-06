@@ -83,7 +83,7 @@ void BLE_SetCustomAdvertiseData(uint8_t *manuf_data)
 
 #else /* BLE_MANAGER_SDKV2 */
   /* USER CODE BEGIN 2 */
-  manuf_data[BLE_MANAGER_CUSTOM_FIELD1]=0x04; /* Custom Firmware */
+  manuf_data[BLE_MANAGER_CUSTOM_FIELD1]=0x05; /* Custom Firmware */
   manuf_data[BLE_MANAGER_CUSTOM_FIELD2]=0x00;
   manuf_data[BLE_MANAGER_CUSTOM_FIELD3]=0x00;
   manuf_data[BLE_MANAGER_CUSTOM_FIELD4]=0x00;

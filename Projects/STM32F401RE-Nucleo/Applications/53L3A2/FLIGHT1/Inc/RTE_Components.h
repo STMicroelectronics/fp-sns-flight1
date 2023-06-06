@@ -22,7 +22,7 @@
 #define  __RTE_COMPONENTS_H__
 
 /* Defines ------------------------------------------------------------------*/
-/* STMicroelectronics.FP-SNS-FLIGHT1.5.0.0 */
+/* STMicroelectronics.FP-SNS-FLIGHT1.5.0.1 */
 #define META_DATA_MANAGER
 #define FLIGHT1_FOTA_53L3A2
 /* STMicroelectronics.X-CUBE-BLE2.3.3.0 */

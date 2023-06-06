@@ -22,7 +22,7 @@
 #define  __RTE_COMPONENTS_H__
 
 /* Defines ------------------------------------------------------------------*/
-/* STMicroelectronics.FP-SNS-FLIGHT1.5.0.0 */
+/* STMicroelectronics.FP-SNS-FLIGHT1.5.0.1 */
 #define BOOT_LOADER
 
 #endif /* __RTE_COMPONENTS_H__ */

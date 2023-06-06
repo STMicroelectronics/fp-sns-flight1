@@ -48,7 +48,7 @@
 /* Package Version only numbers 0->9 */
 #define FLIGHT1_VERSION_MAJOR '5'
 #define FLIGHT1_VERSION_MINOR '0'
-#define FLIGHT1_VERSION_PATCH '0'
+#define FLIGHT1_VERSION_PATCH '1'
 
 /* Package Name */
 #define FLIGHT1_PACKAGENAME "FP-SNS-FLIGHT1"

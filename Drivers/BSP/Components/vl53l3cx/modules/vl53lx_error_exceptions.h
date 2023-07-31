@@ -1,11 +1,11 @@
-
-/* SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause */
-/******************************************************************************
+/**
+ ******************************************************************************
  * Copyright (c) 2020, STMicroelectronics - All Rights Reserved
-
- This file is part of VL53LX and is dual licensed,
- either GPL-2.0+
- or 'BSD 3-clause "New" or "Revised" License' , at your option.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
  ******************************************************************************
  */
 

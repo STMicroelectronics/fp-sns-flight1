@@ -634,7 +634,7 @@ static int32_t vl53l3cx_get_result(VL53L3CX_Object_t *pObj, VL53L3CX_Result_t *p
   uint8_t i, j;
   uint16_t spad_count; /* number of active spads for the current measurement */
   float_t ambient_temp, signal_temp; /* temporary variables used for computation */
-  VL53LX_MultiRangingData_t data;
+  static VL53LX_MultiRangingData_t data;
 
   if ((pObj == NULL) || (pResult == NULL))
   {

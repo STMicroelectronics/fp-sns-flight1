@@ -1,17 +1,9 @@
-
-/* SPDX-License-Identifier: BSD-3-Clause */
-/******************************************************************************
+/**
+ ******************************************************************************
  * Copyright (c) 2020, STMicroelectronics - All Rights Reserved
 
- This file is part of VL53LX Protected and is dual licensed,
- either 'STMicroelectronics Proprietary license'
- or 'BSD 3-clause "New" or "Revised" License' , at your option.
-
- ******************************************************************************
-
+ This file is part of VL53LX Protected and is licensed 
  'STMicroelectronics Proprietary license'
-
- ******************************************************************************
 
  License terms: STMicroelectronics Proprietary in accordance with licensing
  terms at www.st.com/sla0081

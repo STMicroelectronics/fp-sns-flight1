@@ -79,7 +79,6 @@ extern "C" {
 typedef int32_t (*VL53L3CX_Init_Func)(void);
 typedef int32_t (*VL53L3CX_DeInit_Func)(void);
 typedef int32_t (*VL53L3CX_GetTick_Func)(void);
-typedef int32_t (*VL53L3CX_Delay_Func)(uint32_t);
 typedef int32_t (*VL53L3CX_WriteReg_Func)(uint16_t, uint8_t *, uint16_t);
 typedef int32_t (*VL53L3CX_ReadReg_Func)(uint16_t, uint8_t *, uint16_t);
 

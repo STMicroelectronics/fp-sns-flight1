@@ -3,13 +3,13 @@
   ******************************************************************************
   * @file    stm32l4xx_nucleo_bus.c
   * @author  System Research & Applications Team - Catania Lab.
-  * @version 5.0.2
-  * @date    20-June-2023
+  * @version 5.1.0
+  * @date    24-January-2025
   * @brief   source file for the BSP BUS IO driver
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -800,7 +800,7 @@ __weak HAL_StatusTypeDef MX_I2C1_Init(I2C_HandleTypeDef* hi2c)
   HAL_StatusTypeDef ret = HAL_OK;
 
   hi2c->Instance = I2C1;
-  hi2c->Init.Timing = 0x00702991;
+  hi2c->Init.Timing = 0x00F12981;
   hi2c->Init.OwnAddress1 = 0;
   hi2c->Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c->Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;

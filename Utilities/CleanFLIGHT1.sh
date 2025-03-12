@@ -2,8 +2,8 @@ $ cat CleanFLIGHT1.sh
 #!/bin/bash
 
 # control section
-  : ${1?"Usage $0 BootLoaderPath BinaryPath"}
-  : ${2?"Usage $0 BootLoaderPath BinaryPath"}
+  : ${1?"Usage $0 BootLoaderPath/<BootLoader name> BinaryPath"}
+  : ${2?"Usage $0 BootLoaderPath/<BootLoader name> BinaryPath"}
 
 echo "CleanFLIGHT1.sh " $1 $2
 
@@ -24,7 +24,7 @@ echo "/******************************************/"
 echo "/******************************************/"
 echo "              Install BootLoader"
 echo "/******************************************/"
-"${CubeProg}" -c port=swd mode=UR reset=HWrst -d $1BootLoader.bin 0x08000000 -v
+"${CubeProg}" -c port=swd mode=UR reset=HWrst -d $1 0x08000000 -v
 echo "/******************************************/"
 echo "          Install FP-SNS-FLIGHT1"
 echo "/******************************************/"

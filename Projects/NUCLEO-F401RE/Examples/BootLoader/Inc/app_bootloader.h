@@ -9,7 +9,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -26,7 +26,7 @@
 #define APP_BOOTLOADER_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -40,7 +40,8 @@
 
 /* USER CODE END IV */
 
-/* Exported Define -----------------------------------------------------------*/
+/* Exported Defines ----------------------------------------------------------*/
+#define STM32F4xx
 
 /* USER CODE BEGIN ED */
 

@@ -1,4 +1,31 @@
 ########################################################
+# Package VL53LX ReleaseNotes: 1.2.10 rev 2610
+########################################################
+
+-- Ewok LX Mass Market Bare Driver
+
+	Issues fixed in this version:
+	- Fix ticket #1143706 error 4 happen after calibration data loading
+	  Fix didn't actually applied at the file merging
+
+Documentation .chm file updated
+
+########################################################
+# Package VL53LX ReleaseNotes: 1.2.9 rev 2602
+########################################################
+
+-- Ewok LX Mass Market Bare Driver
+
+	Issues fixed in this version:
+	- Fix ticket #1143706 error 4 happen after calibration data loading
+	- Fix ticket #1161077 Bare driver change to optimize live smudge correction
+	- Fix ticket #1161076 Bare driver change to fix corner case when new near target move into field of view
+	- Fix potential issue when refspad calibration fails
+	  The WA to set again the preset mode as it was at the entry in the function must be called in all cases without any condition
+
+Documentation .chm file updated
+
+########################################################
 # Package VL53LX ReleaseNotes: 1.2.8 rev 2578
 ########################################################
 

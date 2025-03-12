@@ -37,18 +37,18 @@ extern "C" {
 /* USER CODE END 1 */
 #define RANGING_SENSOR_INSTANCES_NBR    (3U)
 
-#define VL53L3A2_hi2c                   (hi2c1)
+#define VL53L3A2_HI2C                   (hi2c1)
 
 #define VL53L3A2_I2C_SCL_GPIO_PORT      BUS_I2C1_SCL_GPIO_PORT
 #define VL53L3A2_I2C_SCL_GPIO_PIN       BUS_I2C1_SCL_GPIO_PIN
 #define VL53L3A2_I2C_SDA_GPIO_PORT      BUS_I2C1_SDA_GPIO_PORT
 #define VL53L3A2_I2C_SDA_GPIO_PIN       BUS_I2C1_SDA_GPIO_PIN
 
-#define VL53L3A2_I2C_Init               BSP_I2C1_Init
-#define VL53L3A2_I2C_DeInit             BSP_I2C1_DeInit
-#define VL53L3A2_I2C_WriteReg           BSP_I2C1_Send
-#define VL53L3A2_I2C_ReadReg            BSP_I2C1_Recv
-#define VL53L3A2_GetTick                BSP_GetTick
+#define VL53L3A2_I2C_INIT               BSP_I2C1_Init
+#define VL53L3A2_I2C_DEINIT             BSP_I2C1_DeInit
+#define VL53L3A2_I2C_WRITEREG           BSP_I2C1_Send
+#define VL53L3A2_I2C_READREG            BSP_I2C1_Recv
+#define VL53L3A2_GETTICK                BSP_GetTick
 
 
 #ifdef __cplusplus

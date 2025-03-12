@@ -1,16 +1,16 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file         stm32f4xx_hal_msp.c
+  * @file    stm32f4xx_hal_msp.c
   * @author  System Research & Applications Team - Catania Lab.
   * @version 3.1.0
   * @date    6-March-2023
-  * @brief        This file provides code for the MSP Initialization
-  *               and de-Initialization codes.
+  * @brief   This file provides code for the MSP Initialization
+  *          and de-Initialization codes.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -23,7 +23,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -66,6 +65,7 @@
   */
 void HAL_MspInit(void)
 {
+
   /* USER CODE BEGIN MspInit 0 */
 
   /* USER CODE END MspInit 0 */

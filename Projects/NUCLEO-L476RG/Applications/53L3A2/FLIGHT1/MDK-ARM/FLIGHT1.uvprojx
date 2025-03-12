@@ -10,14 +10,14 @@
       <TargetName>FLIGHT1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6180000::V6.18::ARMCLANG</pCCUsed>
+      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32L476RGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32L4xx_DFP.2.6.1</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>Keil.STM32L4xx_DFP.2.7.0</PackID>
+          <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x20017FFF) IRAM2(0x10000000-0x10007FFF) IROM(0x8000000-0x80FFFFF) CLOCK(8000000) FPU2 CPUTYPE("Cortex-M4") TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -340,7 +340,7 @@
               <MiscControls>-Wno-format</MiscControls>
               <Define>USE_HAL_DRIVER,STM32L476xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc;../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Middlewares/ST/STM32_MetaDataManager;../../../../../../Middlewares/ST/BlueNRG-2/hci/hci_tl_patterns/Basic;../../../../../../Middlewares/ST/BlueNRG-2/utils;../../../../../../Middlewares/ST/BlueNRG-2/includes;../../../../../../Drivers/BSP/Components/Common;../../../../../../Drivers/BSP/53L3A2;../../../../../../Drivers/BSP/Components/vl53l3cx/modules;../../../../../../Drivers/BSP/Components/vl53l3cx/porting;../../../../../../Drivers/BSP/Components/vl53l3cx;../../../../../../Middlewares/Third_Party/parson;../../../../../../Middlewares/ST/STM32_BLE_Manager/Inc</IncludePath>
+              <IncludePath>../Inc;../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc;../../../../../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Middlewares/Third_Party/parson;../../../../../../Middlewares/ST/STM32_BLE_Manager/Inc;../../../../../../Middlewares/ST/BlueNRG-2/hci/hci_tl_patterns/Basic;../../../../../../Middlewares/ST/BlueNRG-2/utils;../../../../../../Middlewares/ST/BlueNRG-2/includes;../../../../../../Drivers/BSP/Components/Common;../../../../../../Drivers/BSP/53L3A2;../../../../../../Drivers/BSP/Components/vl53l3cx/modules;../../../../../../Drivers/BSP/Components/vl53l3cx/porting;../../../../../../Drivers/BSP/Components/vl53l3cx</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -400,19 +400,19 @@
               <FilePath>../Src/main.c</FilePath>
             </File>
             <File>
-              <FileName>OTA.c</FileName>
+              <FileName>ota.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Src/OTA.c</FilePath>
+              <FilePath>../Src/ota.c</FilePath>
             </File>
             <File>
-              <FileName>TargetPlatform.c</FileName>
+              <FileName>target_platform.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Src/TargetPlatform.c</FilePath>
+              <FilePath>../Src/target_platform.c</FilePath>
             </File>
             <File>
-              <FileName>BLE_Function.c</FileName>
+              <FileName>ble_function.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Src/BLE_Function.c</FilePath>
+              <FilePath>../Src/ble_function.c</FilePath>
             </File>
             <File>
               <FileName>app_flight1.c</FileName>
@@ -425,9 +425,9 @@
               <FilePath>../Src/hci_tl_interface.c</FilePath>
             </File>
             <File>
-              <FileName>BLE_Implementation.c</FileName>
+              <FileName>ble_implementation.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Src/BLE_Implementation.c</FilePath>
+              <FilePath>../Src/ble_implementation.c</FilePath>
             </File>
             <File>
               <FileName>stm32l4xx_nucleo_bus.c</FileName>
@@ -610,16 +610,6 @@
               <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c</FilePath>
             </File>
             <File>
-              <FileName>stm32l4xx_hal_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32l4xx_hal_i2c_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32l4xx_hal_rcc.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c</FilePath>
@@ -648,6 +638,16 @@
               <FileName>stm32l4xx_hal_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l4xx_hal_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l4xx_hal_i2c_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c</FilePath>
             </File>
             <File>
               <FileName>stm32l4xx_hal_dma.c</FileName>
@@ -722,12 +722,42 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Middlewares/STM32_MetaDataManager/Data Exchange/STM32_MetaDataManager</GroupName>
+          <GroupName>Middlewares/parson/Data Exchange/parson</GroupName>
           <Files>
             <File>
-              <FileName>MetaDataManager.c</FileName>
+              <FileName>parson.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../../../../../../Middlewares/ST/STM32_MetaDataManager/MetaDataManager.c</FilePath>
+              <FilePath>../../../../../../Middlewares/Third_Party/parson/parson.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/Led</GroupName>
+          <Files>
+            <File>
+              <FileName>ble_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Middlewares/ST/STM32_BLE_Manager/Src/ble_led.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/ObjectsDetection</GroupName>
+          <Files>
+            <File>
+              <FileName>ble_objects_detection.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Middlewares/ST/STM32_BLE_Manager/Src/ble_objects_detection.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middlewares/STM32_BLE_Manager/BLE_Features/BLE_Manager</GroupName>
+          <Files>
+            <File>
+              <FileName>ble_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Middlewares/ST/STM32_BLE_Manager/Src/ble_manager.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -813,46 +843,6 @@
               <FileName>LXReleaseNotes.txt</FileName>
               <FileType>5</FileType>
               <FilePath>../../../../../../Drivers/BSP/Components/vl53l3cx/modules/LXReleaseNotes.txt</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Middlewares/parson/Data Exchange/parson</GroupName>
-          <Files>
-            <File>
-              <FileName>parson.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Middlewares/Third_Party/parson/parson.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/Led</GroupName>
-          <Files>
-            <File>
-              <FileName>BLE_Led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Middlewares/ST/STM32_BLE_Manager/Src/BLE_Led.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/ObjectsDetection</GroupName>
-          <Files>
-            <File>
-              <FileName>BLE_ObjectsDetection.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Middlewares/ST/STM32_BLE_Manager/Src/BLE_ObjectsDetection.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Middlewares/STM32_BLE_Manager/BLE_Manager/BLE_Manager</GroupName>
-          <Files>
-            <File>
-              <FileName>BLE_Manager.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Middlewares/ST/STM32_BLE_Manager/Src/BLE_Manager.c</FilePath>
             </File>
           </Files>
         </Group>

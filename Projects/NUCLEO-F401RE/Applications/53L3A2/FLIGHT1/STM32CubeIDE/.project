@@ -36,29 +36,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/FLIGHT1.ioc</locationURI>
 		</link>
 		<link>
-			<name>Application/User/BLE_Function.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/BLE_Function.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/BLE_Implementation.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/BLE_Implementation.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/OTA.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/OTA.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TargetPlatform.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/TargetPlatform.c</locationURI>
-		</link>
-		<link>
 			<name>Application/User/app_flight1.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/app_flight1.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/ble_function.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/ble_function.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/ble_implementation.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/ble_implementation.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/hci_tl_interface.c</name>
@@ -69,6 +59,11 @@
 			<name>Application/User/main.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/main.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/ota.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/ota.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/stm32f4xx_hal_msp.c</name>
@@ -89,6 +84,11 @@
 			<name>Application/User/stm32f4xx_nucleo_bus.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/stm32f4xx_nucleo_bus.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/target_platform.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/target_platform.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/CMSIS/system_stm32f4xx.c</name>
@@ -336,14 +336,9 @@
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/BSP/Components/vl53l3cx/modules/LXReleaseNotes.txt</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/STM32_BLE_Manager/BLE_Manager/BLE_Manager/BLE_Manager.c</name>
+			<name>Middlewares/STM32_BLE_Manager/BLE_Features/BLE_Manager/ble_manager.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_BLE_Manager/Src/BLE_Manager.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/STM32_MetaDataManager/Data Exchange/STM32_MetaDataManager/MetaDataManager.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_MetaDataManager/MetaDataManager.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_BLE_Manager/Src/ble_manager.c</locationURI>
 		</link>
 		<link>
 			<name>Middlewares/parson/Data Exchange/parson/parson.c</name>
@@ -376,14 +371,14 @@
 			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/BlueNRG-2/utils/ble_list.c</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/Led/BLE_Led.c</name>
+			<name>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/Led/ble_led.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_BLE_Manager/Src/BLE_Led.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_BLE_Manager/Src/ble_led.c</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/ObjectsDetection/BLE_ObjectsDetection.c</name>
+			<name>Middlewares/STM32_BLE_Manager/BLE_Features/HardwareSensors/ObjectsDetection/ble_objects_detection.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_BLE_Manager/Src/BLE_ObjectsDetection.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/Middlewares/ST/STM32_BLE_Manager/Src/ble_objects_detection.c</locationURI>
 		</link>
 		<link>
 			<name>Middlewares/BlueNRG-2/Wireless/BlueNRG-2/HCI_TL/Basic/bluenrg1_devConfig.c</name>

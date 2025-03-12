@@ -3,13 +3,13 @@
   ******************************************************************************
   * @file    app_flight1.c
   * @author  System Research & Applications Team - Catania Lab.
-  * @version 5.0.2
-  * @date    20-June-2023
+  * @version 5.1.0
+  * @date    24-January-2025
   * @brief   This file provides code for flight1 application.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -27,28 +27,37 @@
 #include <math.h>
 #include <limits.h>
 #include "main.h"
-#include "BLE_Manager.h"
-#include "BLE_Function.h"
+#include "ble_manager.h"
+#include "ble_function.h"
 
-#include "TargetFeatures.h"
+#include "target_features.h"
 #include "bluenrg_utils.h"
 
-#include "OTA.h"
-
-#include "MetaDataManager.h"
+#include "ota.h"
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
+/* Private macro ------------------------------------------------------------*/
+/* Base address for meta data of the firmware */
+#define ADDRESS_META_DATA ((uint32_t)(FLASH_END - 0xFFF))
+/* Meta data dimension (Multiply of 4 bytes)*/
+#define META_DATA_DIMENSION 12
+
+/* Private types ----------------------------------------------------------- */
+/* Typedef Meta Data Structure */
+typedef struct
+{
+  uint8_t  NodeName[9];
+  uint8_t  Padding[3];  /* we could write Multiply of 4 bytes at a time... */
+} MetaData_t;
+
 /* Exported Variables --------------------------------------------------------*/
+uint8_t LedEnabled = 0;
 
-uint8_t LedEnabled= 0;
-
-uint8_t LedTimerEnabled= 0;
-uint8_t ObjectsDetectionTimerEnabled= 0;
-
-uint8_t NodeName[8];
+uint8_t LedTimerEnabled = 0;
+uint8_t ObjectsDetectionTimerEnabled = 0;
 
 /* USER CODE BEGIN EV */
 
@@ -61,19 +70,16 @@ uint8_t NodeName[8];
 /* USER CODE END IV */
 
 /* Private variables ---------------------------------------------------------*/
-/* Table with All the known Meta Data */
-MDM_knownGMD_t known_MetaData[]={
-  {GMD_NODE_NAME,      (sizeof(NodeName))},
-  {GMD_END    ,0}/* THIS MUST BE THE LAST ONE */
-};
+static MetaData_t FirmwareMetaData;
+static uint32_t NecessityToSaveMetaData = 0;
 
-static volatile int ButtonPressed		= 0;
-static volatile uint32_t ToF_MultiObjects_SendDistance   = 0;
+static volatile uint8_t ButtonPressed = 0;
+static volatile uint32_t ToF_MultiObjects_SendDistance = 0;
 
-static uint8_t BlinkLed         = 0;
+static uint8_t BlinkLed = 0;
 
 /* The VL53L3CX is able to detect up to 4 objects */
-static uint16_t ObjectsDistance[4]= {0, 0, 0, 0};
+static uint16_t ObjectsDistance[4] = {0, 0, 0, 0};
 static uint8_t HumanPresence;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -129,11 +135,11 @@ void MX_FLIGHT1_Process(void)
 }
 
 /**
- * @brief  Initialize User process.
- *
- * @param  None
- * @retval None
- */
+  * @brief  Initialize User process.
+  *
+  * @param  None
+  * @retval None
+  */
 static void User_Init(void)
 {
   uint8_t Check_BL;
@@ -143,116 +149,132 @@ static void User_Init(void)
 
   InitTargetPlatform();
 
-  /* Check the MetaDataManager */
-  InitMetaDataManager((void *)&known_MetaData,MDM_DATA_TYPE_GMD,NULL);
+  /* Check the Meta Data */
+  FLIGHT1_PRINTF("\r\nRead Meta data (0x%lx)\r\n", ADDRESS_META_DATA);
+  memcpy((void *)&FirmwareMetaData, (void *)ADDRESS_META_DATA, sizeof(MetaData_t));
 
   FLIGHT1_PRINTF("\n\t(HAL %ld.%ld.%ld_%ld)\r\n"
-        "\tCompiled %s %s"
+                 "\tCompiled %s %s"
 #if defined (__IAR_SYSTEMS_ICC__)
-        " (IAR)\r\n"
+                 " (IAR)\r\n"
 #elif defined (__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)) /* For ARM Compiler 5 and 6 */
-        " (KEIL)\r\n"
+                 " (KEIL)\r\n"
 #elif defined (__GNUC__)
-        " (STM32CubeIDE)\r\n"
-#endif
-        "\tSend Every %4d mS objects distance\r\n\n",
-           HAL_GetHalVersion() >>24,
-          (HAL_GetHalVersion() >>16)&0xFF,
-          (HAL_GetHalVersion() >> 8)&0xFF,
-           HAL_GetHalVersion()      &0xFF,
-         __DATE__,__TIME__,
-         ALGO_PERIOD_DISTANCE);
+                 " (STM32CubeIDE)\r\n"
+#endif /* IDE */
+                 "\tSend Every %4d mS objects distance\r\n\n",
+                 HAL_GetHalVersion() >> 24,
+                 (HAL_GetHalVersion() >> 16) & 0xFF,
+                 (HAL_GetHalVersion() >> 8) & 0xFF,
+                 HAL_GetHalVersion()      & 0xFF,
+                 __DATE__, __TIME__,
+                 ALGO_PERIOD_DISTANCE);
 
 #ifdef FLIGHT1_DEBUG_CONNECTION
   FLIGHT1_PRINTF("Debug Connection         Enabled\r\n");
 #endif /* FLIGHT1_DEBUG_CONNECTION */
 
 #ifdef FLIGHT1_DEBUG_NOTIFY_TRAMISSION
-  FLIGHT1_PRINTF("Debug Notify Trasmission Enabled\r\n\n");
+  FLIGHT1_PRINTF("Debug Notify Transmission Enabled\r\n\n");
 #endif /* FLIGHT1_DEBUG_NOTIFY_TRAMISSION */
 
   /* Initialize the BlueNRG stack and services */
-  BluetoothInit();
+  bluetooth_init();
 
   /* Check the BootLoader Compliance */
-  Check_BL= CheckBootLoaderCompliance();
+  Check_BL = CheckBootLoaderCompliance();
 
-  switch(Check_BL)
+  switch (Check_BL)
   {
-  case 0:
-    FLIGHT1_PRINTF("\r\nERROR: BootLoader NOT Compliant with FOTA procedure\r\n\n");
-    break;
-  case 1:
-    FLIGHT1_PRINTF("\r\nBootLoader Compliant with FOTA procedure (IAR)\r\n\n");
-    break;
-  case 2:
-    FLIGHT1_PRINTF("\r\nBootLoader Compliant with FOTA procedure (Keil)\r\n\n");
-    break;
-  case 3:
-    FLIGHT1_PRINTF("\r\nBootLoader Compliant with FOTA procedure (STM32CubeIDE)\r\n\n");
-    break;
+    case 0xFF:
+      FLIGHT1_PRINTF("\r\nERROR: BootLoader NOT Compliant with FOTA procedure\r\n\n");
+      break;
+    case 0x00:
+      FLIGHT1_PRINTF("\r\nBootLoader Compliant with FOTA procedure (IAR)\r\n\n");
+      break;
+    case 0x01:
+      FLIGHT1_PRINTF("\r\nBootLoader Compliant with FOTA procedure (Keil)\r\n\n");
+      break;
+    case 0x02:
+      FLIGHT1_PRINTF("\r\nBootLoader Compliant with FOTA procedure (STM32CubeIDE)\r\n\n");
+      break;
   }
 
   /* Enable timer for led blinking */
-  if(!LedTimerEnabled) {
+  if (!LedTimerEnabled)
+  {
     /* Start the TIM Base generation in interrupt mode */
-    if(HAL_TIM_Base_Start_IT(&TimLedHandle) != HAL_OK){
+    if (HAL_TIM_Base_Start_IT(&TIM_LED_HANDLE) != HAL_OK)
+    {
       /* Stopping Error */
       Error_Handler();
     }
 
-    LedTimerEnabled= 1;
+    LedTimerEnabled = 1;
   }
 }
 
 /**
- * @brief  Configure the device as Client or Server and manage the communication
- *         between a client and a server.
- *
- * @param  None
- * @retval None
- */
+  * @brief  Configure the device as Client or Server and manage the communication
+  *         between a client and a server.
+  *
+  * @param  None
+  * @retval None
+  */
 static void User_Process(void)
 {
   /* Blinking the Led */
-    if(!connected) {
-      if(BlinkLed) {
-        BSP_LED_Toggle(LED2);
-        TargetBoardFeatures.LedStatus = !TargetBoardFeatures.LedStatus;
-		BlinkLed= 0;
+  if (!connected)
+  {
+    if (BlinkLed)
+    {
+      BSP_LED_Toggle(LED2);
+      TargetBoardFeatures.LedStatus = !TargetBoardFeatures.LedStatus;
+      BlinkLed = 0;
+    }
+  }
+
+  if (set_connectable)
+  {
+    if (NecessityToSaveMetaData)
+    {
+      uint32_t Success = EraseMetaData();
+      FLIGHT1_PRINTF("Erase Meta Data\r\n");
+      if (Success)
+      {
+        SaveMetaData();
+        FLIGHT1_PRINTF("Save Meta Data\r\n");
       }
+
+      NecessityToSaveMetaData = 0;
     }
 
-    if(set_connectable){
-      if(NecessityToSaveMetaDataManager) {
-        uint32_t Success = EraseMetaDataManager();
-        if(Success) {
-          SaveMetaDataManager();
-        }
-      }
+    /* Now update the BLE advertize data and make the Board connectable */
+    enable_extended_configuration_command();
 
-      /* Now update the BLE advertize data and make the Board connectable */
-      setConnectable();
-      set_connectable = FALSE;
-    }
+    set_connectable_ble();
+    set_connectable = FALSE;
+  }
 
-    /* handle BLE event */
-    hci_user_evt_proc();
+  /* handle BLE event */
+  hci_user_evt_proc();
 
-    /* Handle user button */
-    if(ButtonPressed) {
-      ButtonCallback();
-      ButtonPressed=0;
-    }
+  /* Handle user button */
+  if (ButtonPressed)
+  {
+    ButtonCallback();
+    ButtonPressed = 0;
+  }
 
-    /* */
-    if(ToF_MultiObjects_SendDistance) {
-      ToF_MultiObjects_SendDistance= 0;
-      RangingLoop();
-    }
+  /* */
+  if (ToF_MultiObjects_SendDistance)
+  {
+    ToF_MultiObjects_SendDistance = 0;
+    RangingLoop();
+  }
 
-    /* Wait for Event */
-    __WFI();
+  /* Wait for Event */
+  __WFI();
 }
 
 /**
@@ -273,40 +295,44 @@ static void ButtonCallback(void)
 static void RangingLoop(void)
 {
   uint32_t ret;
-  uint8_t i, j;
+  uint8_t i;
+  uint8_t j;
 
   RANGING_SENSOR_Result_t Result;
 
   /* Polling mode */
-  ret = VL53L3A2_RANGING_SENSOR_GetDistance(VL53L3A2_DEV_CENTER, &Result);
+  ret = RANGING_SENSOR_GET_DISTANCE(TOF_INSTANCE, &Result);
 
   if (ret == BSP_ERROR_NONE)
   {
     for (i = 0; i < RANGING_SENSOR_MAX_NB_ZONES; i++)
     {
       /* Number of the detected distances from the ToF sensor */
-      FLIGHT1_PRINTF("\r\nNumber of objects detected= %ld\r\n", Result.ZoneResult[i].NumberOfTargets);
+      FLIGHT1_PRINTF("\r\n");
+      FLIGHT1_PRINTF("Number of objects detected= %ld\r\n", Result.ZoneResult[i].NumberOfTargets);
 
       /* Reset the objects distance data */
-      for(j=0;j<4;j++)
-        ObjectsDistance[j]= 0;
+      for (j = 0; j < 4; j++)
+      {
+        ObjectsDistance[j] = 0;
+      }
 
       /* Reset the Human Presence data */
-      HumanPresence= 0;
+      HumanPresence = 0;
 
       for (j = 0; j < Result.ZoneResult[i].NumberOfTargets; j++)
       {
         FLIGHT1_PRINTF("\tObject= %d status= %ld D= %5ldmm ",
-                       j+1,
+                       j + 1,
                        Result.ZoneResult[i].Status[j],
                        Result.ZoneResult[i].Distance[j]);
 
-        if(Result.ZoneResult[i].Status[j] == 0)
+        if (Result.ZoneResult[i].Status[j] == 0)
         {
-          ObjectsDistance[j]= Result.ZoneResult[i].Distance[j];
+          ObjectsDistance[j] = Result.ZoneResult[i].Distance[j];
 
-          if( (Result.ZoneResult[i].Distance[j] >= PRESENCE_MIN_DISTANCE_RANGE) &&
-              (Result.ZoneResult[i].Distance[j] <= PRESENCE_MAX_DISTANCE_RANGE) )
+          if ((Result.ZoneResult[i].Distance[j] >= PRESENCE_MIN_DISTANCE_RANGE) &&
+              (Result.ZoneResult[i].Distance[j] <= PRESENCE_MAX_DISTANCE_RANGE))
           {
             HumanPresence++;
             FLIGHT1_PRINTF("Human Presence= %d", HumanPresence);
@@ -320,24 +346,23 @@ static void RangingLoop(void)
         }
       }
 
-      BLE_ObjectsDetectionStatusUpdate(ObjectsDistance, HumanPresence);
+      ble_objects_detection_status_update(ObjectsDistance, HumanPresence);
     }
   }
-
-  //HAL_Delay(POLLING_PERIOD);
 }
 
 /**
- * @brief  EXTI line detection callback.
- * @param  uint16_t GPIO_Pin Specifies the pins connected EXTI line
- * @retval None
- */
+  * @brief  EXTI line detection callback.
+  * @param  uint16_t GPIO_Pin Specifies the pins connected EXTI line
+  * @retval None
+  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  switch(GPIO_Pin){
-  case GPIO_PIN_13:
-    ButtonPressed=1;
-    break;
+  switch (GPIO_Pin)
+  {
+    case GPIO_PIN_13:
+      ButtonPressed = 1;
+      break;
   }
 }
 
@@ -348,25 +373,29 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if(htim==(&TimDistanceHandle)) {
+  if (htim == (&TIM_DISTANCE_HANDLE))
+  {
     /* ToF multi objects distance */
-    if(ObjectsDetectionTimerEnabled) {
-      ToF_MultiObjects_SendDistance=1;
-    }
-  } else if(htim == (&TimLedHandle)) {
-    /* Led */
-    if(LedTimerEnabled)
+    if (ObjectsDetectionTimerEnabled)
     {
-      BlinkLed=1;
+      ToF_MultiObjects_SendDistance = 1;
+    }
+  }
+  else if (htim == (&TIM_LED_HANDLE))
+  {
+    /* Led */
+    if (LedTimerEnabled)
+    {
+      BlinkLed = 1;
     }
   }
 }
 
 /**
- * @brief  BSP Push Button callback
- * @param  Button Specifies the pin connected EXTI line
- * @retval None.
- */
+  * @brief  BSP Push Button callback
+  * @param  Button Specifies the pin connected EXTI line
+  * @retval None.
+  */
 void BSP_PB_Callback(Button_TypeDef Button)
 {
   /* Prevent unused argument(s) compilation warning */
@@ -386,12 +415,12 @@ void StartMeasurement(void)
 
   FLIGHT1_PRINTF("Ranging sensor starts\r\n");
 
-  ret = VL53L3A2_RANGING_SENSOR_Start(VL53L3A2_DEV_CENTER, RS_MODE_BLOCKING_CONTINUOUS);
+  ret = RANGING_SENSOR_START(TOF_INSTANCE, RS_MODE_BLOCKING_CONTINUOUS);
 
   if (ret != BSP_ERROR_NONE)
   {
     FLIGHT1_PRINTF("\tRanging sensor starts measurement failed\r\n");
-    while(1);
+    while (1);
   }
   else
   {
@@ -410,12 +439,12 @@ void StopMeasurement(void)
 
   FLIGHT1_PRINTF("Ranging sensor stop\r\n");
 
-  ret = VL53L3A2_RANGING_SENSOR_Stop(VL53L3A2_DEV_CENTER);
+  ret = RANGING_SENSOR_STOP(TOF_INSTANCE);
 
   if (ret != BSP_ERROR_NONE)
   {
     FLIGHT1_PRINTF("\tRanging sensor stop measurement failed\r\n");
-    while(1);
+    while (1);
   }
   else
   {
@@ -424,40 +453,134 @@ void StopMeasurement(void)
 }
 
 /**
- * @brief  Check if there are a valid Node Name Values in Memory and read them
- * @param  None
- * @retval unsigned char Success/Not Success
- */
+  * @brief  Update Node Name on to Meta Data
+  * @param  None
+  * @retval None
+  */
+void UpdateNodeNameMetaData(void)
+{
+  for (uint32_t i = 0; i < 7; i++)
+  {
+    FirmwareMetaData.NodeName[i + 1] = ble_stack_value.board_name[i];
+  }
+
+  /* Save the node name in the meta data */
+  NecessityToSaveMetaData = 1;
+}
+
+/**
+  * @brief  Check if there are a valid Node Name Values in Memory and read them
+  * @param  None
+  * @retval unsigned char Success/Not Success
+  */
 unsigned char ReCallNodeNameFromMemory(void)
 {
   /* ReLoad the Node Name Values from RAM */
-  unsigned char Success=0;
+  unsigned char Success = 0;
 
-  /* Recall the node name Credential saved */
-  MDM_ReCallGMD(GMD_NODE_NAME,(void *)&NodeName);
-
-  if(NodeName[0] != 0x12)
+  if (FirmwareMetaData.NodeName[0] != 0x12)
   {
-    NodeName[0]= 0x12;
+    FirmwareMetaData.NodeName[0] = 0x12;
 
-    for(int i=0; i<7; i++)
-      NodeName[i+1]= BLE_StackValue.BoardName[i];
+    for (uint32_t i = 0; i < 7; i++)
+    {
+      FirmwareMetaData.NodeName[i + 1] = ble_stack_value.board_name[i];
+    }
 
-    MDM_SaveGMD(GMD_NODE_NAME,(void *)&NodeName);
-    NecessityToSaveMetaDataManager=1;
+    FirmwareMetaData.NodeName[8] = '\0';
+
+    NecessityToSaveMetaData = 1;
 
     FLIGHT1_PRINTF("\r\nNode name not present in FLASH\r\n");
-    FLIGHT1_PRINTF("\tNode name written to FLASH= %s\r\n", BLE_StackValue.BoardName);
+    FLIGHT1_PRINTF("\tNode name written to FLASH= %s\r\n", ble_stack_value.board_name);
   }
   else
   {
-    for(int i=0; i<7; i++)
-      BLE_StackValue.BoardName[i]= NodeName[i+1];
+    for (uint32_t i = 0; i < 7; i++)
+    {
+      ble_stack_value.board_name[i] = FirmwareMetaData.NodeName[i + 1];
+    }
 
-    FLIGHT1_PRINTF("\r\nNode name read from FLASH (%s)\r\n", BLE_StackValue.BoardName);
+    FLIGHT1_PRINTF("\r\nNode name read from FLASH (%s)\r\n", ble_stack_value.board_name);
   }
 
   return Success;
+}
+
+/**
+  * @brief User function for Erasing the Flash data
+  * @param None
+  * @retval uint32_t Success/NotSuccess [1/0]
+  */
+uint32_t EraseMetaData(void)
+{
+  FLASH_EraseInitTypeDef EraseInitStruct;
+  uint32_t SectorError = 0;
+  uint32_t Success = 1;
+
+  EraseInitStruct.TypeErase = TYPEERASE_SECTORS;
+  EraseInitStruct.VoltageRange = VOLTAGE_RANGE_3;
+  EraseInitStruct.Sector = FLASH_SECTOR_7;
+  EraseInitStruct.NbSectors = 1;
+
+  /* Unlock the Flash to enable the flash control register access *************/
+  HAL_FLASH_Unlock();
+
+  if (HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
+  {
+    /* Error occurred while sector erase.
+      User can add here some code to deal with this error.
+      SectorError will contain the faulty sector and then to know the code error on this sector,
+      user can call function 'HAL_FLASH_GetError()'
+      FLASH_ErrorTypeDef errorcode = HAL_FLASH_GetError(); */
+    Success = 0;
+    FLIGHT1_PRINTF("Error occurred while sector erase\r\n");
+  }
+
+  /* Lock the Flash to disable the flash control register access (recommended
+  to protect the FLASH memory against possible unwanted operation) *********/
+  HAL_FLASH_Lock();
+
+  return Success;
+}
+
+/**
+  * @brief User function for Saving the Meta Data on the Flash
+  * @param None
+  * @retval None
+  */
+void SaveMetaData(void)
+{
+  /* Store in Flash Memory */
+  uint32_t Address;
+  uint32_t BankInfoAddress;
+  uint32_t Count;
+
+  Address = ADDRESS_META_DATA;
+  BankInfoAddress = (uint32_t)&FirmwareMetaData;
+
+  /* Unlock the Flash to enable the flash control register access *************/
+  HAL_FLASH_Unlock();
+
+  for (Count = 0; Count < META_DATA_DIMENSION; Count += 4)
+  {
+    if (HAL_FLASH_Program(TYPEPROGRAM_WORD, Address, (*(uint32_t *)BankInfoAddress)) != HAL_OK)
+    {
+      /* Error occurred while writing data in Flash memory.
+         User can add here some code to deal with this error
+         FLASH_ErrorTypeDef errorcode = HAL_FLASH_GetError(); */
+      FLIGHT1_PRINTF("Error occurred while writing data in Flash memory\r\n");
+    }
+
+    Address = Address + 4;
+    BankInfoAddress = BankInfoAddress + 4;
+  }
+
+  NecessityToSaveMetaData = 0;
+
+  /* Lock the Flash to disable the flash control register access (recommended
+   to protect the FLASH memory against possible unwanted operation) *********/
+  HAL_FLASH_Lock();
 }
 
 /* USER CODE BEGIN 1 */
@@ -475,7 +598,8 @@ void HAL_Delay(__IO uint32_t Delay)
 {
   uint32_t tickstart = 0;
   tickstart = HAL_GetTick();
-  while((HAL_GetTick() - tickstart) < Delay){
+  while ((HAL_GetTick() - tickstart) < Delay)
+  {
     __WFI();
   }
 }

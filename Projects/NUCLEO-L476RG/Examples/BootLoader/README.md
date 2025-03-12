@@ -22,6 +22,9 @@ BootLoader
 
 - After code generation from STM32CubeMX software:
   - for IAR and STM32CubeIDE and before building, replace the linker scripts with the scripts in the folder LinkerScript
+  - for STM32CubeIDE and before building, open the properties and in C/C++ Build -> Settings tab Tool Settings -> MCU/MPU GCC Compiler -> Optimization check the box for:
+    - Place functions in their own sections
+	- Place data in their own sections
   - for Keil, open the "Options for Target" and in the tab "Target" set 0x4000 as ROM size. 
 - This example must run starting at the beginning of the FLASH 0x08000000 in memory and works in collaboration with another program saved on the FLASH at address 0x08004000
 
@@ -29,11 +32,16 @@ BootLoader
 
 BootLoader example compiled with MDK-ARM IDE doesn't work with applications compiled with STM32CubeIDE.
 
+### <b>Known Issues</b>
+
+Compiler warning "FLIGHT1.elf has a LOAD segment with RWX permissions" is generated with STM32CubeIDE.
+It doesn’t affect application performances.
+
 ### <b>Dependencies</b>
 
 STM32Cube packages:
 
-  - STM32L4xx drivers from STM32CubeL4 v1.17.2
+  - STM32L4xx drivers from STM32CubeL4 v1.18.1
 
 ### <b>How to use it?</b>
 
@@ -53,14 +61,14 @@ For IAR:
 
 For Keil µVision 5:
 
- - Open Keil µVision 5 toolchain (this firmware has been successfully tested with MDK-ARM Professional Version: 5.37.0).
+ - Open Keil µVision 5 toolchain (this firmware has been successfully tested with MDK-ARM Professional Version: 5.38.0).
  - Open the µVision project file MDK-ARM/BootLoader.uvprojx
  - Rebuild all files and load your image into target memory.
  - Run the example.
  
 For Integrated Development Environment for STM32:
 
- - Open STM32CubeIDE (this firmware has been successfully tested with Version 1.12.0).
+ - Open STM32CubeIDE (this firmware has been successfully tested with Version 1.17.0).
  - Set the default workspace proposed by the IDE (please be sure that there are not spaces in the workspace path).
  - Press "File" -> "Import" -> "Existing Projects into Workspace"; press "Browse" in the "Select root directory" and choose the path where the System
    Workbench project is located (it should be STM32CubeIDE). 
@@ -73,7 +81,7 @@ SRA Application Team
 
 ### <b>License</b>
 
-Copyright (c) 2023 STMicroelectronics.
+Copyright (c) 2025 STMicroelectronics.
 All rights reserved.
 
 This software is licensed under terms that can be found in the LICENSE file

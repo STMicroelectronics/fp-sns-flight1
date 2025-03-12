@@ -340,6 +340,7 @@ int32_t VL53L3CX_GetDistance(VL53L3CX_Object_t *pObj, VL53L3CX_Result_t *pResult
 {
   int32_t ret;
 
+  ret = VL53L3CX_OK;
   if ((pObj == NULL) || (pResult == NULL))
   {
     ret = VL53L3CX_INVALID_PARAM;
@@ -348,7 +349,7 @@ int32_t VL53L3CX_GetDistance(VL53L3CX_Object_t *pObj, VL53L3CX_Result_t *pResult
   {
     ret = VL53L3CX_ERROR;
   }
-  else
+  if (ret == VL53L3CX_OK)
   {
     if (pObj->IsBlocking == 1U)
     {
@@ -404,6 +405,8 @@ int32_t VL53L3CX_Start(VL53L3CX_Object_t *pObj, uint32_t Mode)
   {
     pObj->IsRanging = 1;
     ret = VL53L3CX_OK;
+
+    ret = (int32_t)VL53LX_ClearInterruptAndStartMeasurement(pObj);
 
     switch (Mode)
     {

@@ -26,7 +26,7 @@
 #define APP_BOOTLOADER_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -40,7 +40,8 @@
 
 /* USER CODE END IV */
 
-/* Exported Define -----------------------------------------------------------*/
+/* Exported Defines ----------------------------------------------------------*/
+#define STM32L4xx
 
 /* USER CODE BEGIN ED */
 

@@ -52,7 +52,7 @@ stdin/stdout and stderr capabilities</li>
 phase via UART. Launch a terminal application and set the UART port to
 115200 bps, 8 bit, No Parity, 1 stop bit.</p>
 <p>This example must be used with the related ST BLE Sensor Android
-(Version 4.20.0 or higher) or iOS (Version 4.20.0 or higher) application
+(Version 5.2.0 or higher) or iOS (Version 5.2.0 or higher) application
 available on Play/itune store, in order to read the sent information by
 Bluetooth Low Energy protocol</p>
 <h3 id="important-hardware-additional-information"><b>Important Hardware
@@ -75,7 +75,7 @@ BLE module of X-NUCLEO-BNRG2A1.</li>
 </ol>
 <ol type="1">
 <li><p>The Firmware-Over-The-Air (FOTA) is done using the ST BLE Sensor
-Android/iOS application (Version 4.20.0 and above)</p></li>
+Android/iOS application (Version 5.2.0 and above)</p></li>
 <li><p>This example must run starting at address 0x08004000 in memory
 and works ONLY if the BootLoader is saved at the beginning of the FLASH
 (address 0x08000000)</p></li>
@@ -101,7 +101,7 @@ BE NOT used for FOTA)</li>
 <li>for IAR and STM32CubeIDE replace the linker scripts with the scripts
 in the folder LinkerScript</li>
 <li>for Keil, open the “Options for Target” and in the tab “Target” set
-start= 0x8004000 and sixe= 0x80000.</li>
+start= 0x8004000 and sixe= 0x80000 and check the box "Use MicroLib".</li>
 </ul></li>
 </ol>
 <h3 id="keywords"><b>Keywords</b></h3>
@@ -127,16 +127,19 @@ on VL53L3CX for STM32 Nucleo.</li>
 <h3 id="known-limitations"><b>Known Limitations</b></h3>
 <p>FLIGHT1 application compiled with STM32CubeIDE doesn’t work with
 BootLoader example compiled with MDK-ARM IDE.</p>
+<h3 id="Known Issues"><b>Known Issues</b></h3>
+<p>Compiler warning "FLIGHT1.elf has a LOAD segment with RWX permissions" is generated with STM32CubeIDE.</p>
+<p>It doesn’t affect application performances.</p>
 <h3 id="dependencies"><b>Dependencies</b></h3>
 <p>STM32Cube packages:</p>
 <ul>
-<li>STM32L4xx drivers from STM32CubeL4 V1.17.2</li>
+<li>STM32L4xx drivers from STM32CubeL4 V1.18.1</li>
 </ul>
 <p>X-CUBE packages:</p>
 <ul>
 <li>X-CUBE-BLE2 V3.3.0</li>
 <li>X-CUBE-BLEMGR V2.0.0</li>
-<li>X-CUBE-TOF1 V3.3.0</li>
+<li>X-CUBE-TOF1 V3.4.2</li>
 </ul>
 <h3 id="how-to-use-it"><b>How to use it?</b></h3>
 <p>This package contains projects for 3 IDEs viz. IAR, Keil µVision 5
@@ -160,7 +163,7 @@ Embedded Workbench V9.20.1).</li>
 <p>For Keil µVision 5:</p>
 <ul>
 <li>Open Keil µVision 5 toolchain (this firmware has been successfully
-tested with MDK-ARM Professional Version: 5.37.0).</li>
+tested with MDK-ARM Professional Version: 5.38.0).</li>
 <li>Open the µVision project file MDK-ARM/FLIGHT1.uvprojx</li>
 <li>Rebuild all files and run these script that you find on the directory Utilities and you had installed STM32CubeProgrammer tool:
 <ul>
@@ -170,7 +173,7 @@ tested with MDK-ARM Professional Version: 5.37.0).</li>
 <p>For Integrated Development Environment for STM32:</p>
 <ul>
 <li>Open STM32CubeIDE (this firmware has been successfully tested with
-Version 1.12.0).</li>
+Version 1.17.0).</li>
 <li>Set the default workspace proposed by the IDE (please be sure that
 there are not spaces in the workspace path).</li>
 <li>Press “File” -&gt; “Import” -&gt; “Existing Projects into
@@ -185,7 +188,7 @@ STM32CubeIDE).</li>
 <h3 id="author"><b>Author</b></h3>
 <p>SRA Application Team</p>
 <h3 id="license"><b>License</b></h3>
-<p>Copyright (c) 2023 STMicroelectronics. All rights reserved.</p>
+<p>Copyright (c) 2025 STMicroelectronics. All rights reserved.</p>
 <p>This software is licensed under terms that can be found in the
 LICENSE file in the root directory of this software component. If no
 LICENSE file comes with this software, it is provided AS-IS.</p>

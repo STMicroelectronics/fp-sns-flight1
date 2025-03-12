@@ -521,11 +521,11 @@ static int32_t VL53L3CX_Probe(uint32_t Instance)
 
   /* Configure the ranging sensor driver */
   IOCtx.Address     = RANGING_SENSOR_VL53L3CX_ADDRESS;
-  IOCtx.Init        = VL53L3A2_I2C_Init;
-  IOCtx.DeInit      = VL53L3A2_I2C_DeInit;
-  IOCtx.WriteReg    = VL53L3A2_I2C_WriteReg;
-  IOCtx.ReadReg     = VL53L3A2_I2C_ReadReg;
-  IOCtx.GetTick     = VL53L3A2_GetTick;
+  IOCtx.Init        = VL53L3A2_I2C_INIT;
+  IOCtx.DeInit      = VL53L3A2_I2C_DEINIT;
+  IOCtx.WriteReg    = VL53L3A2_I2C_WRITEREG;
+  IOCtx.ReadReg     = VL53L3A2_I2C_READREG;
+  IOCtx.GetTick     = VL53L3A2_GETTICK;
 
   if (VL53L3CX_RegisterBusIO(&(VL53L3CXObj[Instance]), &IOCtx) != VL53L3CX_OK)
   {

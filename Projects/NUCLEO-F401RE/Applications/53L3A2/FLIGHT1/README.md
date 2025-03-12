@@ -16,7 +16,7 @@ The Example application initizializes all the Components and Library creating 3 
 The example application allows the user to control the initialization phase via UART.
 Launch a terminal application and set the UART port to 115200 bps, 8 bit, No Parity, 1 stop bit.
  
-This example must be used with the related ST BLE Sensor Android (Version 4.20.0 or higher) or iOS (Version 4.20.0 or higher) application available on Play/itune store,
+This example must be used with the related ST BLE Sensor Android (Version 5.2.0 or higher) or iOS (Version 5.2.0 or higher) application available on Play/itune store,
 in order to read the sent information by Bluetooth Low Energy protocol
 
 ### <b>Important Hardware Additional Information</b>
@@ -52,7 +52,7 @@ a) The implementation allow the Firmware-Over-The-Air (FOTA).
 b) After code generation from STM32CubeMX software before building:
    - Replaced in the folder Src the file system_stm32f4xx.c
    - for IAR and STM32CubeIDE replace the linker scripts with the scripts in the folder LinkerScript
-   - for Keil, open the "Options for Target" and in the tab "Target" set start= 0x8004000 and sixe= 0x3C000. 
+   - for Keil, open the "Options for Target" and in the tab "Target" set start= 0x8004000 and size= 0x3C000 and "use MicroLIB". . 
 
 ### <b>Keywords</b>
 
@@ -76,17 +76,22 @@ ADDITIONAL_COMP : VL53L3CX https://www.st.com/en/imaging-and-photonics-solutions
 
 FLIGHT1 application compiled with STM32CubeIDE doesn't work with BootLoader example compiled with MDK-ARM IDE.
 
+### <b>Known Issues</b>
+
+Compiler warning "FLIGHT1.elf has a LOAD segment with RWX permissions" is generated with STM32CubeIDE.
+It doesn’t affect application performances.
+
 ### <b>Dependencies</b>
 
 STM32Cube packages:
 
-  - STM32F4xx drivers from STM32CubeF4 V1.27.0
+  - STM32F4xx drivers from STM32CubeF4 V1.28.1
   
 X-CUBE packages:
 
   - X-CUBE-BLE2 V3.3.0
-  - X-CUBE-BLEMGR V2.0.0
-  - X-CUBE-TOF1 V3.3.0
+  - X-CUBE-BLEMGR V4.0.0
+  - X-CUBE-TOF1 V3.4.2
 
 ### <b>How to use it?</b>
 
@@ -106,14 +111,14 @@ For IAR:
 
 For Keil µVision 5:
 
- - Open Keil µVision 5 toolchain (this firmware has been successfully tested with MDK-ARM Professional Version: 5.37.0).
+ - Open Keil µVision 5 toolchain (this firmware has been successfully tested with MDK-ARM Professional Version: 5.38.0).
  - Open the µVision project file MDK-ARM/FLIGHT1.uvprojx
  - Rebuild all files and run these script that you find on the directory Utilities and you had installed STM32CubeProgrammer tool:
    - CleanFLIGHT1.sh
  
 For Integrated Development Environment for STM32:
 
- - Open STM32CubeIDE (this firmware has been successfully tested with Version 1.12.0).
+ - Open STM32CubeIDE (this firmware has been successfully tested with Version 1.17.0).
  - Set the default workspace proposed by the IDE (please be sure that there are not spaces in the workspace path).
  - Press "File" -> "Import" -> "Existing Projects into Workspace"; press "Browse" in the "Select root directory" and choose the path where the System
    Workbench project is located (it should be STM32CubeIDE). 
@@ -126,7 +131,7 @@ SRA Application Team
 
 ### <b>License</b>
 
-Copyright (c) 2023 STMicroelectronics.
+Copyright (c) 2025 STMicroelectronics.
 All rights reserved.
 
 This software is licensed under terms that can be found in the LICENSE file

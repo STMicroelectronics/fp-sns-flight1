@@ -53,8 +53,7 @@ environment</b></h3>
 <ul>
 <li>for IAR and STM32CubeIDE and before building, replace the linker
 scripts with the scripts in the folder LinkerScript</li>
-<li>for Keil, open the “Options for Target” and in the tab “Target” set
-0x3F00 as ROM size.</li>
+<li>for Keil, open the “Options for Target” and in the tab “Target” set 0x3F00 as ROM size and "use MicroLIB".</li>
 </ul></li>
 <li>This example must run starting at the beginning of the FLASH
 0x08000000 in memory and works in collaboration with another program
@@ -63,10 +62,13 @@ saved on the FLASH at address 0x08004000</li>
 <h3 id="known-limitations"><b>Known Limitations</b></h3>
 <p>BootLoader example compiled with MDK-ARM IDE doesn’t work with
 applications compiled with STM32CubeIDE.</p>
+<h3 id="Known Issues"><b>Known Issues</b></h3>
+<p>Compiler warning "FLIGHT1.elf has a LOAD segment with RWX permissions" is generated with STM32CubeIDE.</p>
+<p>It doesn’t affect application performances.</p>
 <h3 id="dependencies"><b>Dependencies</b></h3>
 <p>STM32Cube packages:</p>
 <ul>
-<li>STM32F4xx drivers from STM32CubeF4 V1.27.1</li>
+<li>STM32F4xx drivers from STM32CubeF4 V1.28.1</li>
 </ul>
 <h3 id="how-to-use-it"><b>How to use it?</b></h3>
 <p>This package contains projects for 3 IDEs viz. IAR, Keil µVision 5
@@ -88,7 +90,7 @@ Embedded Workbench V9.20.1).</li>
 <p>For Keil µVision 5:</p>
 <ul>
 <li>Open Keil µVision 5 toolchain (this firmware has been successfully
-tested with MDK-ARM Professional Version: 5.37.0).</li>
+tested with MDK-ARM Professional Version: 5.38.0).</li>
 <li>Open the µVision project file MDK-ARM/BootLoader.uvprojx</li>
 <li>Rebuild all files and load your image into target memory.</li>
 <li>Run the example.</li>
@@ -96,7 +98,7 @@ tested with MDK-ARM Professional Version: 5.37.0).</li>
 <p>For Integrated Development Environment for STM32:</p>
 <ul>
 <li>Open STM32CubeIDE (this firmware has been successfully tested with
-Version 1.12.0).</li>
+Version 1.17.0).</li>
 <li>Set the default workspace proposed by the IDE (please be sure that
 there are not spaces in the workspace path).</li>
 <li>Press “File” -&gt; “Import” -&gt; “Existing Projects into
@@ -109,7 +111,7 @@ STM32CubeIDE).</li>
 <h3 id="author"><b>Author</b></h3>
 <p>SRA Application Team</p>
 <h3 id="license"><b>License</b></h3>
-<p>Copyright (c) 2023 STMicroelectronics. All rights reserved.</p>
+<p>Copyright (c) 2025 STMicroelectronics. All rights reserved.</p>
 <p>This software is licensed under terms that can be found in the
 LICENSE file in the root directory of this software component. If no
 LICENSE file comes with this software, it is provided AS-IS.</p>

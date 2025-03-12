@@ -22,12 +22,12 @@
 <div class="col-sm-12 col-lg-4">
 <center>
 <h1 id="release-notes-for-fp-sns-flight1-software-for-stm32"><small>Release Notes for</small> <strong>FP-SNS-FLIGHT1 Software for STM32</strong></h1>
-<p>Copyright © 2023 STMicroelectronics<br />
+<p>Copyright © 2025 STMicroelectronics<br />
 </p>
 <a href="https://www.st.com" class="logo"><img src="_htmresc/st_logo.png" alt="ST logo" /></a>
 </center>
 <h1 id="purpose">Purpose</h1>
-<p>The <strong>FP-SNS-FLIGHT1</strong> is an STM32Cube function pack which lets you connect your IoT node to a smartphone via BLE and use a suitable Android or iOS like the ST BLE Sensor app (Android Version 4.20.0 - iOS 4.20.0 or higher) to view real-time time-of-flight sensors data. This package, together with the suggested combination of STM32 and ST devices can be used to develop specific wearable applications, or smart things applications in general. The software runs on the STM32 microcontroller and includes all the necessary drivers to recognize the devices on the STM32 Nucleo development board and expansion boards.</p>
+<p>The <strong>FP-SNS-FLIGHT1</strong> is an STM32Cube function pack which lets you connect your IoT node to a smartphone via BLE and use a suitable Android or iOS like the ST BLE Sensor app (Android Version 5.2.0 - iOS 5.2.0 or higher) to view real-time time-of-flight sensors data. This package, together with the suggested combination of STM32 and ST devices can be used to develop specific wearable applications, or smart things applications in general. The software runs on the STM32 microcontroller and includes all the necessary drivers to recognize the devices on the STM32 Nucleo development board and expansion boards.</p>
 <p>The expansion is built on STM32Cube software technology to ease portability across different STM32 microcontrollers.</p>
 <h1 id="fp-sns-flight1-software-features">FP-SNS-FLIGHT1 software features:</h1>
 <ul>
@@ -42,10 +42,30 @@
 <li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32</li>
 <li>X-NUCLEO-53L3A2 Multi-targets ranging sensor expansion board based on VL53L3CX for STM32 Nucleo</li>
 </ul></li>
+<li>NUCLEO-F401RE nucleo development board and expansion boards:
+<ul>
+<li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32 Nucleo</li>
+<li>VL53L3CX-SATEL Breakout board with VL53L3CX multi-target detection ToF ranging sensor for easy integration into customer device.</li>
+</ul></li>
 <li>NUCLEO-L476RG nucleo development board and expansion boards:
 <ul>
 <li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32</li>
 <li>X-NUCLEO-53L3A2 Multi-targets ranging sensor expansion board based on VL53L3CX for STM32 Nucleo</li>
+</ul></li>
+<li>NUCLEO-L476RG nucleo development board and expansion boards:
+<ul>
+<li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32 Nucleo</li>
+<li>VL53L3CX-SATEL Breakout board with VL53L3CX multi-target detection ToF ranging sensor for easy integration into customer device.</li>
+</ul></li>
+<li>NUCLEO-U575ZI-Q nucleo development board and expansion boards:
+<ul>
+<li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32 Nucleo</li>
+<li>X-NUCLEO-53L3A2 ranging sensor with multi object detection and FoV (field of view) programming.</li>
+</ul></li>
+<li>NUCLEO-U575ZI-Q nucleo development board and expansion boards:
+<ul>
+<li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32 Nucleo</li>
+<li>VL53L3CX-SATEL Breakout board with VL53L3CX multi-target detection ToF ranging sensor for easy integration into customer device.</li>
 </ul></li>
 </ul>
 <h1 id="for-each-board-support-this-package-contains-the-following-projects">For each board support, this package contains the following projects:</h1>
@@ -66,14 +86,258 @@
 <div class="col-sm-12 col-lg-8">
 <h1 id="update-history">Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section14" checked aria-hidden="true"> <label for="collapse-section14" aria-hidden="true">V5.0.2 / 20-June-2023</label>
+<input type="checkbox" id="collapse-section15" checked aria-hidden="true"> <label for="collapse-section15" aria-hidden="true">V5.1.0 / 24-January-2025</label>
 <div>
 <h2 id="main-changes">Main Changes</h2>
 <h3 id="maintenance-release">Maintenance release</h3>
 <ul>
-<li>Added description of additional components on supported boards in all readme</li>
+<li>Added support for NUCLEO-U575ZI-Q</li>
+<li>Added CUSTOM application for VL53L3CX-SATEL Breakout board</li>
+<li>Removed STM32_MetaDataManager middleware</li>
+<li>Updated STM32_BLE_Manager middleware</li>
+<li>Updated Development Toolchains and Compilers version</li>
 </ul>
 <h2 id="contents">Contents</h2>
+<p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
+<table>
+<caption>Documentation<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">FP-SNS-FLIGHT1_NUCLEO-F401RE Doxygen documentation</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-FLIGHT1_NUCLEO-F401RE.chm">CHM</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FP-SNS-FLIGHT1_NUCLEO-L476RG Doxygen documentation</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-FLIGHT1_NUCLEO-L476RG.chm">CHM</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FP-SNS-FLIGHT1_NUCLEO-U575ZI-Q Doxygen documentation</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="Documentation\FP-SNS-FLIGHT1_NUCLEO-U575ZI-Q.chm">CHM</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Projects<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">NUCLEO-F401RE/Applications/53L3A2/FLIGHT1</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-F401RE/Applications/53L3A2/FLIGHT1/readme.html">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NUCLEO-F401RE/Applications/CUSTOM/FLIGHT1</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-F401RE/Applications/CUSTOM/FLIGHT1/readme.html">Read Me</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NUCLEO-F401RE/Examples/BootLoader</td>
+<td style="text-align: left;">3.1.0</td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-F401RE/Examples/BootLoader/readme.html">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NUCLEO-L476RG/Applications/53L3A2/FLIGHT1</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-L476RG/Applications/53L3A2/FLIGHT1/readme.html">Read Me</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NUCLEO-L476RG/Applications/CUSTOM/FLIGHT1</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-L476RG/Applications/CUSTOM/FLIGHT1/readme.html">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NUCLEO-L476RG/Examples/BootLoader</td>
+<td style="text-align: left;">3.1.0</td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-L476RG/Examples/BootLoader/readme.html">Read Me</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NUCLEO-U575ZI-Q/Applications/53L3A2/FLIGHT1</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-U575ZI-Q/Applications/53L3A2/FLIGHT1/readme.html">Read Me</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NUCLEO-U575ZI-Q/Applications/CUSTOM/FLIGHT1</td>
+<td style="text-align: left;">5.1.0 <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="Projects/NUCLEO-U575ZI-Q/Applications/CUSTOM/FLIGHT1/readme.html">Read Me</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Middlewares<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">BlueNRG-2</td>
+<td style="text-align: left;">3.3.0</td>
+<td style="text-align: left;"><a href="Middlewares\ST\BlueNRG-2\Release_Notes.html">Release Note</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32_BLE_Manager</td>
+<td style="text-align: left;">2.0.0 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Middlewares\ST\STM32_BLE_Manager\Release_Notes.html">Release Note</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">parson</td>
+<td style="text-align: left;">1.5.2 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Middlewares\Third_Party\parson\Release_Notes.html">Release Note</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Drivers<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STM32F4xx CMSIS</td>
+<td style="text-align: left;">2.6.10 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32F4xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4xx CMSIS</td>
+<td style="text-align: left;">1.7.3 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32L4xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32U5xx CMSIS</td>
+<td style="text-align: left;">1.4.1 <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="Drivers\CMSIS\Device\ST\STM32U5xx\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32F4xx HAL</td>
+<td style="text-align: left;">1.8.3 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\STM32F4xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">STM32L4xx HAL</td>
+<td style="text-align: left;">1.13.4 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\STM32L4xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STM32L4xx HAL</td>
+<td style="text-align: left;">1.16.1 <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="Drivers\STM32U5xx_HAL_Driver\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSP STM32F4xx_NUCLEO</td>
+<td style="text-align: left;">1.2.9 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\STM32F4xx-Nucleo\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BSP STM32L4xx_NUCLEO</td>
+<td style="text-align: left;">2.1.8 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\STM32L4xx_Nucleo\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BSP STM32U5xx_NUCLEO</td>
+<td style="text-align: left;">1.2.2 <span class="icon-st-add"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\STM32U5xx_Nucleo\Release_Notes.html">release notes</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BSP X-NUCLEO-53L3A2</td>
+<td style="text-align: left;">2.0.5 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\53L3A2\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Components<br />
+</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Document</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">vl53l3cx</td>
+<td style="text-align: left;">2.0.6 <span class="icon-st-update"></span></td>
+<td style="text-align: left;"><a href="Drivers\BSP\Components\vl53l3cx\Release_Notes.html">release notes</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-limitations">Known Limitations</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="warning">Warning</h2>
+<ul>
+<li>Whether you are generating your source code through STM32CubeMX tool, consider to deeply read the getting started guide within the folder documentation</li>
+</ul>
+<h2 id="important-hardware-additional-information">Important Hardware Additional Information</h2>
+<p>BlueNRG-2 library does not work with the stock firmware that is loaded in the BLE module of X-NUCLEO-BNRG2A1 expansion board. For this reason:</p>
+<ul>
+<li>first of all, it is needed to solder on X-NUCLEO-BNRG2A1, if it is not soldered, a 0 Ohm resistor at R117</li>
+<li>then you can use a standard ST-Link V2-1 with 5 jumper wires female-female together with STSW-BNRGFLASHER software tool (currently available only for Windows PC) in order to update the firmware of the BLE module of X-NUCLEO-BNRG2A1.</li>
+</ul>
+<p>Read user manual for more details.</p>
+<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<ul>
+<li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
+<li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.38.0 + ST-LINK/V2</li>
+<li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.17.0 + ST-LINK</li>
+</ul>
+<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<ul>
+<li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
+<li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
+<li>NUCLEO-U575ZI-Q STM32 Nucleo-144 development board with STM32U575ZIT6Q MCU, SMPS, supports Arduino, ST Zio and morpho connectivity [<a href="https://www.st.com/en/evaluation-tools/nucleo-u575zi-q.html">NUCLEO-U575ZI-Q</a>]</li>
+<li>X-NUCLEO-BNRG2A1 Bluetooth Low Energy expansion board based on the BLUENRG-M2SP module for STM32 Nucleo [<a href="https://www.st.com/en/ecosystems/x-nucleo-bnrg2a1.html">X-NUCLEO-BNRG2A1</a>]</li>
+<li>X-NUCLEO-53L3A2 Motion MEMS and environmental sensor expansion board for STM32 Nucleo [<a href="https://www.st.com/en/evaluation-tools/x-nucleo-53l3a2.html">X-NUCLEO-53L3A2</a>]</li>
+<li>VL53L3CX-SATEL Breakout board with VL53L3CX multi-target detection ToF ranging sensor for easy integration into customer device [<a href="https://www.st.com/en/evaluation-tools/vl53l3cx-satel.html">VL53L3CX-SATEL</a>]</li>
+</ul>
+<h2 id="backward-compatibility">Backward Compatibility</h2>
+<p>None</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>This software release is compatible with:</p>
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V5.2.0 (or higher)</li>
+<li><a href="https://apps.apple.com/it/app/st-ble-sensor/id993670214"><strong>ST BLE Sensor iOS application</strong></a> V5.2.0 (or higher)</li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section14" aria-hidden="true"> <label for="collapse-section14" aria-hidden="true">V5.0.2 / 20-June-2023</label>
+<div>
+<h2 id="main-changes-1">Main Changes</h2>
+<h3 id="maintenance-release-1">Maintenance release</h3>
+<ul>
+<li>Added description of additional components on supported boards in all readme</li>
+</ul>
+<h2 id="contents-1">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -230,35 +494,35 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations">Known Limitations</h2>
+<h2 id="known-limitations-1">Known Limitations</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="warning">Warning</h2>
+<h2 id="warning-1">Warning</h2>
 <ul>
 <li>Whether you are generating your source code through STM32CubeMX tool, consider to deeply read the getting started guide within the folder documentation</li>
 </ul>
-<h2 id="important-hardware-additional-information">Important Hardware Additional Information</h2>
+<h2 id="important-hardware-additional-information-1">Important Hardware Additional Information</h2>
 <p>BlueNRG-2 library does not work with the stock firmware that is loaded in the BLE module of X-NUCLEO-BNRG2A1 expansion board. For this reason:</p>
 <ul>
 <li>first of all, it is needed to solder on X-NUCLEO-BNRG2A1, if it is not soldered, a 0 Ohm resistor at R117</li>
 <li>then you can use a standard ST-Link V2-1 with 5 jumper wires female-female together with STSW-BNRGFLASHER software tool (currently available only for Windows PC) in order to update the firmware of the BLE module of X-NUCLEO-BNRG2A1.</li>
 </ul>
 <p>Read user manual for more details.</p>
-<h2 id="development-toolchains-and-compilers">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.12.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
 <ul>
 <li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
 <li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
 </ul>
-<h2 id="backward-compatibility">Backward Compatibility</h2>
+<h2 id="backward-compatibility-1">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies">Dependencies</h2>
+<h2 id="dependencies-1">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V4.20.0 (or higher)</li>
@@ -269,12 +533,12 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section13" aria-hidden="true"> <label for="collapse-section13" aria-hidden="true">V5.0.1 / 10-May-2023</label>
 <div>
-<h2 id="main-changes-1">Main Changes</h2>
-<h3 id="maintenance-release-1">Maintenance release</h3>
+<h2 id="main-changes-2">Main Changes</h2>
+<h3 id="maintenance-release-2">Maintenance release</h3>
 <ul>
 <li>Patched to resolve an issue with dependencies on Example Selector</li>
 </ul>
-<h2 id="contents-1">Contents</h2>
+<h2 id="contents-2">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -431,31 +695,31 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-1">Known Limitations</h2>
+<h2 id="known-limitations-2">Known Limitations</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="important-hardware-additional-information-1">Important Hardware Additional Information</h2>
+<h2 id="important-hardware-additional-information-2">Important Hardware Additional Information</h2>
 <p>BlueNRG-2 library does not work with the stock firmware that is loaded in the BLE module of X-NUCLEO-BNRG2A1 expansion board. For this reason:</p>
 <ul>
 <li>first of all, it is needed to solder on X-NUCLEO-BNRG2A1, if it is not soldered, a 0 Ohm resistor at R117</li>
 <li>then you can use a standard ST-Link V2-1 with 5 jumper wires female-female together with STSW-BNRGFLASHER software tool (currently available only for Windows PC) in order to update the firmware of the BLE module of X-NUCLEO-BNRG2A1.</li>
 </ul>
 <p>Read user manual for more details.</p>
-<h2 id="development-toolchains-and-compilers-1">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-2">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-1">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-2">Supported Devices and Boards</h2>
 <ul>
 <li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
 <li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
 </ul>
-<h2 id="backward-compatibility-1">Backward Compatibility</h2>
+<h2 id="backward-compatibility-2">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-1">Dependencies</h2>
+<h2 id="dependencies-2">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V4.18.0 (or higher)</li>
@@ -466,8 +730,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section12" aria-hidden="true"> <label for="collapse-section12" aria-hidden="true">V5.0.0 / 6-March-2023</label>
 <div>
-<h2 id="main-changes-2">Main Changes</h2>
-<h3 id="maintenance-release-2">Maintenance release</h3>
+<h2 id="main-changes-3">Main Changes</h2>
+<h3 id="maintenance-release-3">Maintenance release</h3>
 <ul>
 <li>Replaced Bluetooth board X-NUCLEO-IDB05A2 with X-NUCLEO-BNRG2A1</li>
 <li>Code generation from STM32CubeMX application by .ioc file for each platform and for each applications and examples</li>
@@ -475,7 +739,7 @@
 <li>Removed support for X-NUCLEO-NFC04A1</li>
 <li>Updated Development Toolchains and Compilers version</li>
 </ul>
-<h2 id="contents-2">Contents</h2>
+<h2 id="contents-3">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -632,31 +896,31 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-2">Known Limitations</h2>
+<h2 id="known-limitations-3">Known Limitations</h2>
 <ul>
 <li>None</li>
 </ul>
-<h2 id="important-hardware-additional-information-2">Important Hardware Additional Information</h2>
+<h2 id="important-hardware-additional-information-3">Important Hardware Additional Information</h2>
 <p>BlueNRG-2 library does not work with the stock firmware that is loaded in the BLE module of X-NUCLEO-BNRG2A1 expansion board. For this reason:</p>
 <ul>
 <li>first of all, it is needed to solder on X-NUCLEO-BNRG2A1, if it is not soldered, a 0 Ohm resistor at R117</li>
 <li>then you can use a standard ST-Link V2-1 with 5 jumper wires female-female together with STSW-BNRGFLASHER software tool (currently available only for Windows PC) in order to update the firmware of the BLE module of X-NUCLEO-BNRG2A1.</li>
 </ul>
 <p>Read user manual for more details.</p>
-<h2 id="development-toolchains-and-compilers-2">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-3">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.37.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.11.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-2">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-3">Supported Devices and Boards</h2>
 <ul>
 <li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
 <li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
 </ul>
-<h2 id="backward-compatibility-2">Backward Compatibility</h2>
+<h2 id="backward-compatibility-3">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-2">Dependencies</h2>
+<h2 id="dependencies-3">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V4.18.0 (or higher)</li>
@@ -667,8 +931,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section11" aria-hidden="true"> <label for="collapse-section11" aria-hidden="true">V4.2.0 / 28-February-2022</label>
 <div>
-<h2 id="main-changes-3">Main Changes</h2>
-<h3 id="maintenance-release-3">Maintenance release</h3>
+<h2 id="main-changes-4">Main Changes</h2>
+<h3 id="maintenance-release-4">Maintenance release</h3>
 <ul>
 <li>Neutral license added</li>
 <li>Updated STM32CubeL4 Firmware Package</li>
@@ -680,7 +944,7 @@
 <li>Updated STM32_BLE_Manager middleware</li>
 <li>Updated Development Toolchains and Compilers version</li>
 </ul>
-<h2 id="contents-3">Contents</h2>
+<h2 id="contents-4">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -832,7 +1096,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-3">Known Limitations</h2>
+<h2 id="known-limitations-4">Known Limitations</h2>
 <ul>
 <li>There is an hardware conflict between the X-NUCLEO-NFC04A1 expansion board and the X-NUCLEO-IDB05A2 expansion board through the Arduino UNO R3 extension connector.</li>
 </ul>
@@ -840,24 +1104,24 @@
 <ul>
 <li>After pairing with STBLESensor application using NFC reader, after reset for pairing again the board with STBLESensor application without using NFC reader could be necessary restart the mobile phone before the connection.</li>
 </ul>
-<h2 id="important-hardware-additional-information-3">Important Hardware Additional Information</h2>
+<h2 id="important-hardware-additional-information-4">Important Hardware Additional Information</h2>
 <ul>
 <li>Before to connect X-NUCLEO-NFC04A1 expansion board with X-NUCLEO-IDB05A2 expansion board through the Arduino UNO R3 extension connector, remove the resistors R1 and R11 onto X-NUCLEO-NFC04A1 board.</li>
 </ul>
-<h2 id="development-toolchains-and-compilers-3">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-4">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V9.20.1 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.32.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.8.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-3">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-4">Supported Devices and Boards</h2>
 <ul>
 <li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
 <li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
 </ul>
-<h2 id="backward-compatibility-3">Backward Compatibility</h2>
+<h2 id="backward-compatibility-4">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-3">Dependencies</h2>
+<h2 id="dependencies-4">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V4.13.0 (or higher)</li>
@@ -868,8 +1132,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section10" aria-hidden="true"> <label for="collapse-section10" aria-hidden="true">V4.1.0 / 1-October-2021</label>
 <div>
-<h2 id="main-changes-4">Main Changes</h2>
-<h3 id="maintenance-release-4">Maintenance release</h3>
+<h2 id="main-changes-5">Main Changes</h2>
+<h3 id="maintenance-release-5">Maintenance release</h3>
 <ul>
 <li>Added support to X-NUCLEO-53L3A2</li>
 <li>Added support to STM32_BLE_Manager middleware</li>
@@ -882,7 +1146,7 @@
 <li>Removed X-CUBE-53L1A2 Firmware Package</li>
 <li>Updated Development Toolchains and Compilers version</li>
 </ul>
-<h2 id="contents-4">Contents</h2>
+<h2 id="contents-5">Contents</h2>
 <p>The components flagged by “<span class="icon-st-update"></span>” have changed since the previous release. “<span class="icon-st-add"></span>” are new.</p>
 <table>
 <caption>Documentation<br />
@@ -1056,7 +1320,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-4">Known Limitations</h2>
+<h2 id="known-limitations-5">Known Limitations</h2>
 <ul>
 <li>There is an hardware conflict between the X-NUCLEO-NFC04A1 expansion board and the X-NUCLEO-IDB05A2 expansion board through the Arduino UNO R3 extension connector.</li>
 </ul>
@@ -1065,24 +1329,24 @@
 <li><p>After pairing with STBLESensor application using NFC reader, after reset for pairing again the board with STBLESensor application without using NFC reader could be necessary restart the mobile phone before the connection.</p></li>
 <li><p>Feature ToF Objecs Detection not available for iOS version but under developing.</p></li>
 </ul>
-<h2 id="important-hardware-additional-information-4">Important Hardware Additional Information</h2>
+<h2 id="important-hardware-additional-information-5">Important Hardware Additional Information</h2>
 <ul>
 <li>Before to connect X-NUCLEO-NFC04A1 expansion board with X-NUCLEO-IDB05A2 expansion board through the Arduino UNO R3 extension connector, remove the resistors R1 and R11 onto X-NUCLEO-NFC04A1 board.</li>
 </ul>
-<h2 id="development-toolchains-and-compilers-4">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-5">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V8.50.9 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.32.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.7.0 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-4">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-5">Supported Devices and Boards</h2>
 <ul>
 <li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
 <li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
 </ul>
-<h2 id="backward-compatibility-4">Backward Compatibility</h2>
+<h2 id="backward-compatibility-5">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-4">Dependencies</h2>
+<h2 id="dependencies-5">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V4.12.0 (or higher)</li>
@@ -1093,8 +1357,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section9" aria-hidden="true"> <label for="collapse-section9" aria-hidden="true">V4.0.0 / 21-Sep-2020</label>
 <div>
-<h2 id="main-changes-5">Main Changes</h2>
-<h3 id="maintenance-release-5">Maintenance release</h3>
+<h2 id="main-changes-6">Main Changes</h2>
+<h3 id="maintenance-release-6">Maintenance release</h3>
 <ul>
 <li>Source Code Refactoring according the BSP v2.6.x specifications</li>
 <li>Source Code Refactoring according to STM32CubeMX code generation<br />
@@ -1120,7 +1384,7 @@
 </li>
 <li>Updated Development Toolchains and Compilers version</li>
 </ul>
-<h2 id="contents-5">Contents</h2>
+<h2 id="contents-6">Contents</h2>
 <table>
 <caption>Documentation<br />
 </caption>
@@ -1287,7 +1551,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="known-limitations-5">Known Limitations</h2>
+<h2 id="known-limitations-6">Known Limitations</h2>
 <ul>
 <li>There is an hardware conflict between the X-NUCLEO-NFC04A1 expansion board and the X-NUCLEO-IDB05A2 expansion board through the Arduino UNO R3 extension connector.</li>
 </ul>
@@ -1295,7 +1559,7 @@
 <ul>
 <li>None</li>
 </ul>
-<h2 id="important-hardware-additional-information-5">Important Hardware Additional Information</h2>
+<h2 id="important-hardware-additional-information-6">Important Hardware Additional Information</h2>
 <ul>
 <li>Before to connect X-NUCLEO-NFC04A1 expansion board with X-NUCLEO-IDB05A2 expansion board through the Arduino UNO R3 extension connector, remove the resistors R1 and R11 onto X-NUCLEO-NFC04A1 board.</li>
 </ul>
@@ -1303,20 +1567,20 @@
 <ul>
 <li>The 53L1A2 BSP has been treated as an exception in this package since its version is not compatible with the other BSPs used in this firmware. A patch (53L1A2_Patch.c), located in user-space (/Applications/FLIGHT1/Patch), replaces the original BSP file which has been disabled, allowing the whole software structure to work flawlessly.</li>
 </ul>
-<h2 id="development-toolchains-and-compilers-5">Development Toolchains and Compilers</h2>
+<h2 id="development-toolchains-and-compilers-6">Development Toolchains and Compilers</h2>
 <ul>
 <li>IAR Embedded Workbench for ARM (EWARM) toolchain V8.50.5 + STLink/V2</li>
 <li>RealView Microcontroller Development Kit (MDK-ARM) toolchain V5.31.0 + ST-LINK/V2</li>
 <li>Integrated Development Environment for STM32 (STM32CubeIDE) V1.4.2 + ST-LINK</li>
 </ul>
-<h2 id="supported-devices-and-boards-5">Supported Devices and Boards</h2>
+<h2 id="supported-devices-and-boards-6">Supported Devices and Boards</h2>
 <ul>
 <li>NUCLEO-F446RE STM32 Nucleo-64 development board with STM32F401RE MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-f401re.html">NUCLEO-F401RE</a>]</li>
 <li>NUCLEO-L476RG STM32 Nucleo-64 development board with STM32L476RG MCU, supports Arduino and ST morpho connectivity [<a href="https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html">NUCLEO-L476RG</a>]</li>
 </ul>
-<h2 id="backward-compatibility-5">Backward Compatibility</h2>
+<h2 id="backward-compatibility-6">Backward Compatibility</h2>
 <p>None</p>
-<h2 id="dependencies-5">Dependencies</h2>
+<h2 id="dependencies-6">Dependencies</h2>
 <p>This software release is compatible with:</p>
 <ul>
 <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems"><strong>ST BLE Sensor Android application</strong></a> V4.8.0 (or higher)</li>
@@ -1327,8 +1591,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section8" aria-hidden="true"> <label for="collapse-section8" aria-hidden="true">V3.3.0 / 27-July-2018</label>
 <div>
-<h2 id="main-changes-6">Main Changes</h2>
-<h3 id="maintenance-release-6">Maintenance release</h3>
+<h2 id="main-changes-7">Main Changes</h2>
+<h3 id="maintenance-release-7">Maintenance release</h3>
 <ul>
 <li>Added support for STEVAL-BCNKT01V1 (BlueCoin)</li>
 <li>Added support for X-NUCLEO-NFC04A1</li>
@@ -1346,8 +1610,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section7" aria-hidden="true"> <label for="collapse-section7" aria-hidden="true">V3.2.0 / 06-December-2017 </label>
 <div>
-<h2 id="main-changes-7">Main Changes</h2>
-<h3 id="maintenance-release-7">Maintenance release</h3>
+<h2 id="main-changes-8">Main Changes</h2>
+<h3 id="maintenance-release-8">Maintenance release</h3>
 <ul>
 <li>Updated the STM32L4xx HAL driver</li>
 <li>Updated X-CUBE-BLE1</li>
@@ -1362,8 +1626,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section6" aria-hidden="true"> <label for="collapse-section6" aria-hidden="true">V3.1.0 / 12-July-2017 </label>
 <div>
-<h2 id="main-changes-8">Main Changes</h2>
-<h3 id="maintenance-release-8">Maintenance release</h3>
+<h2 id="main-changes-9">Main Changes</h2>
+<h3 id="maintenance-release-9">Maintenance release</h3>
 <ul>
 <li>Updated the STM32F4xx and STM32L4xx HAL drivers</li>
 <li>Updated X-CUBE-BLE1</li>
@@ -1378,8 +1642,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section5" aria-hidden="true"> <label for="collapse-section5" aria-hidden="true">V3.0.0 / 12-May-2017 </label>
 <div>
-<h2 id="main-changes-9">Main Changes</h2>
-<h3 id="maintenance-release-9">Maintenance release</h3>
+<h2 id="main-changes-10">Main Changes</h2>
+<h3 id="maintenance-release-10">Maintenance release</h3>
 <ul>
 <li>Added support to X-NUCLEO-53L0A1</li>
 <li>Added MotionAR Activity recognition Library</li>
@@ -1395,8 +1659,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section4" aria-hidden="true"> <label for="collapse-section4" aria-hidden="true">V2.2.0 / 02-February-2017 </label>
 <div>
-<h2 id="main-changes-10">Main Changes</h2>
-<h3 id="maintenance-release-10">Maintenance release</h3>
+<h2 id="main-changes-11">Main Changes</h2>
+<h3 id="maintenance-release-11">Maintenance release</h3>
 <ul>
 <li>Updated X-CUBE-MEMS1</li>
 <li>Updated the X-CUBE-BLE1</li>
@@ -1414,8 +1678,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section3" aria-hidden="true"> <label for="collapse-section3" aria-hidden="true">V2.1.0 / 15-December-2016 </label>
 <div>
-<h2 id="main-changes-11">Main Changes</h2>
-<h3 id="maintenance-release-11">Maintenance release</h3>
+<h2 id="main-changes-12">Main Changes</h2>
+<h3 id="maintenance-release-12">Maintenance release</h3>
 <ul>
 <li>Added variable timers</li>
 </ul>
@@ -1424,8 +1688,8 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section2" aria-hidden="true"> <label for="collapse-section2" aria-hidden="true">V2.0.0 / 21-September-2016 </label>
 <div>
-<h2 id="main-changes-12">Main Changes</h2>
-<h3 id="maintenance-release-12">Maintenance release</h3>
+<h2 id="main-changes-13">Main Changes</h2>
+<h3 id="maintenance-release-13">Maintenance release</h3>
 <ul>
 <li>Added the Firmware-Over-The-Air (FOTA) update using BlueMS Android/iOS application (Version &gt;=3.0.0)</li>
 <li>Compatible with the Android/iOS application (BlueMS Version 2.0 or above)</li>
@@ -1452,7 +1716,7 @@
 <div class="collapse">
 <input type="checkbox" id="collapse-section1" aria-hidden="true"> <label for="collapse-section1" aria-hidden="true">V1.0.0 / 28-January-2016 </label>
 <div>
-<h2 id="main-changes-13">Main Changes</h2>
+<h2 id="main-changes-14">Main Changes</h2>
 <h3 id="first-official-release">First official release</h3>
 <ul>
 <li>Compatible with the Android/iOS application (BlueMS Version 2.0 or above)<br />

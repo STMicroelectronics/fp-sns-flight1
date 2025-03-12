@@ -3,14 +3,14 @@
   ******************************************************************************
   * @file    main.h
   * @author  System Research & Applications Team - Catania Lab.
-  * @version 5.0.2
-  * @date    20-June-2023
+  * @version 5.1.0
+  * @date    24-January-2025
   * @brief   Header for main.c file.
   *          This file contains the common defines of the application.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -56,6 +56,8 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
+void MX_TIM2_Init(void);
+void MX_TIM3_Init(void);
 
 /* USER CODE BEGIN EFP */
 

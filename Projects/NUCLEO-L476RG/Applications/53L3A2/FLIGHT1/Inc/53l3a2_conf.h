@@ -1,22 +1,21 @@
-
 /**
- ******************************************************************************
- * @file    53l3a2_conf.h
- * @author  IMG SW Application Team
- * @brief   This file contains definitions for the ToF components bus interfaces
- *          when using the X-NUCLEO-53L3A2 expansion board
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2022 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
+  ******************************************************************************
+  * @file    53l3a2_conf.h
+  * @author  IMG SW Application Team
+  * @brief   This file contains definitions for the ToF components bus interfaces
+  *          when using the X-NUCLEO-53L3A2 expansion board
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef VL53L3A2_CONF_H
@@ -41,18 +40,18 @@ extern "C" {
  */
 #define RANGING_SENSOR_INSTANCES_NBR    (3U)
 
-#define VL53L3A2_hi2c                   (hi2c1)
+#define VL53L3A2_HI2C                   (hi2c1)
 
 #define VL53L3A2_I2C_SCL_GPIO_PORT      BUS_I2C1_SCL_GPIO_PORT
 #define VL53L3A2_I2C_SCL_GPIO_PIN       BUS_I2C1_SCL_GPIO_PIN
 #define VL53L3A2_I2C_SDA_GPIO_PORT      BUS_I2C1_SDA_GPIO_PORT
 #define VL53L3A2_I2C_SDA_GPIO_PIN       BUS_I2C1_SDA_GPIO_PIN
 
-#define VL53L3A2_I2C_Init               BSP_I2C1_Init
-#define VL53L3A2_I2C_DeInit             BSP_I2C1_DeInit
-#define VL53L3A2_I2C_WriteReg           BSP_I2C1_Send
-#define VL53L3A2_I2C_ReadReg            BSP_I2C1_Recv
-#define VL53L3A2_GetTick                BSP_GetTick
+#define VL53L3A2_I2C_INIT               BSP_I2C1_Init
+#define VL53L3A2_I2C_DEINIT             BSP_I2C1_DeInit
+#define VL53L3A2_I2C_WRITEREG           BSP_I2C1_Send
+#define VL53L3A2_I2C_READREG            BSP_I2C1_Recv
+#define VL53L3A2_GETTICK                BSP_GetTick
 
 #ifdef __cplusplus
 }

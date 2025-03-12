@@ -1,13 +1,13 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    RTE_Components.h
+  * @file
   * @author  MCD Application Team
   * @version V2.0.0
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -22,7 +22,7 @@
 #define  __RTE_COMPONENTS_H__
 
 /* Defines ------------------------------------------------------------------*/
-/* STMicroelectronics.FP-SNS-FLIGHT1.5.0.2 */
+/* STMicroelectronics.FP-SNS-FLIGHT1.5.1.0 */
 #define BOOT_LOADER
 
 #endif /* __RTE_COMPONENTS_H__ */
